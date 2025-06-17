@@ -262,7 +262,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
               
               <Button 
                 onClick={handleSaveConfig}
-                disabled={!modelId || !apiKey || !keyName || errorContext.isLoading}
+                // disabled={!modelId || !apiKey || !keyName || errorContext.isLoading}
                 className="w-full mt-4"
               >
                 <Plus className="h-4 w-4 mr-2" />

@@ -7,6 +7,7 @@ import {
   Users,
   PlayCircle,
   ChartBarStacked,
+  LineChart
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
@@ -29,6 +30,12 @@ export default function Sidebar() {
       label: 'Test Runs',
       icon: PlayCircle,
       href: '/tools/runs'
+    },
+    //!added by niranjan
+    {
+      label: 'Analytics',
+      icon: LineChart,
+      href: '/tools/analytics'
     }
   ]
   

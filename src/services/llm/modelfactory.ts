@@ -3,6 +3,9 @@ import { ChatOpenAI } from "@langchain/openai";
 import { BaseChatModel } from "@langchain/core/language_models/chat_models";
 import { LLMProvider } from './enums';
 import { MODEL_CONFIGS } from './config';
+//!added by niranjan
+import { ChatGoogleGenerativeAI  } from "@langchain/google-genai"; // Assuming this is the correct import for Gemini models
+import { config } from "dotenv";
 
 export class ModelFactory {
   static createLangchainModel(modelId: string, apiKey: string, extraParams: Record<string, any> = {}): BaseChatModel {
@@ -28,6 +31,13 @@ export class ModelFactory {
             organization: extraParams.organization
           } : undefined
         });
+      //!added by niranjan  
+      case LLMProvider.Gemini:
+        return new ChatGoogleGenerativeAI ({
+          apiKey : "AIzaSyDJT1gAmnsQptt5uvrCVE0sV5DfgheA0go",
+          modelName: "gemini-3.5-sonnet",
+          temperature: 0.7
+        })  
       default:
         throw new Error(`Unsupported LLM provider: ${config.provider}`);
     }
@@ -36,7 +46,7 @@ export class ModelFactory {
   static getUserModelConfigs(): { configs: any[], selectedModelId: string } {
     const configsJson = typeof localStorage !== 'undefined' ? localStorage.getItem("model_configs") : null;
     const selectedModelId = typeof localStorage !== 'undefined' ? localStorage.getItem("selected_model_id") || "" : "";
-    
+
     if (!configsJson) {
       return { configs: [], selectedModelId };
     }
@@ -55,5 +65,5 @@ export class ModelFactory {
     if (!selectedModelId || configs.length === 0) return null;
     
     return configs.find((config: any) => config.id === selectedModelId) || null;
-  }
+  }keyName
 }

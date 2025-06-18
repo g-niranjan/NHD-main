@@ -27,6 +27,10 @@ import { Plus, Trash2 } from "lucide-react";
 import { useErrorContext } from "@/hooks/useErrorContext";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
 
+//!added by niranjan
+import{ redirect } from 'next/navigation';
+
+
 interface ApiKeyConfigProps {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -55,6 +59,15 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
       setModelId(PROVIDER_MODELS[provider][0]);
     }
   }, [provider]);
+
+  //const router = useRouter();
+
+  const handleClose = () => {
+    setIsOpen(false);
+    // Optionally, redirect to the home page or another route
+     //router.push('/tools'); // Uncomment if you want to redirect after closing
+     redirect('/tools')
+  };
 
   const handleSaveConfig = () => {
     try {
@@ -131,7 +144,8 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
       <DialogContent className="sm:max-w-[600px] border-border">
         <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle>LLM API Configuration</DialogTitle>
-          <DialogClose className="absolute right-4 top-4" />
+          <DialogClose className="absolute right-4 top-4"  onClick={handleClose}/>
+
         </DialogHeader>
         
         {errorContext.error && (
@@ -207,6 +221,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
                   <SelectContent>
                     <SelectItem value={LLMProvider.Anthropic}>Anthropic</SelectItem>
                     <SelectItem value={LLMProvider.OpenAI}>OpenAI</SelectItem>
+                    <SelectItem value={LLMProvider.Google}>Google</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -262,7 +277,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
               
               <Button 
                 onClick={handleSaveConfig}
-                // disabled={!modelId || !apiKey || !keyName || errorContext.isLoading}
+                disabled={!modelId || !apiKey || !keyName || errorContext.isLoading}
                 className="w-full mt-4"
               >
                 <Plus className="h-4 w-4 mr-2" />

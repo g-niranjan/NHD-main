@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator"
 
 import ErrorDisplay from "@/components/common/ErrorDisplay"
 import AgentConfigWizard from "@/components/tools/AgentConfigWizard"
+import { set } from "zod"
 
 export default function ToolsPage() {
   const { savedAgents, loadAgent, saveTest } = useAgentConfig()
@@ -20,6 +21,14 @@ export default function ToolsPage() {
   const handleWizardComplete = async (config: any) => {
     console.log('Wizard completed with config:', config)
     setCurrentConfig(config)
+  }
+  //!added by niranjan
+  const handleOpenWizard = () => {
+    setCurrentConfig( true);
+  }
+
+  const handleCloseWizard = () => {
+    setCurrentConfig(false);  
   }
 
   const handleLoadAgent = async (agentId: string) => {
@@ -108,11 +117,21 @@ export default function ToolsPage() {
             </DropdownMenu>
           </div>
         </div>
-
-        <AgentConfigWizard 
-          onComplete={handleWizardComplete}
-          initialConfig={currentConfig}
-        />
+          
+          <div className="flex gap-3">
+            <Button
+            className="mb-6"
+            onClick={handleOpenWizard}
+          >
+            <Server className="h-4 w-4 mr-2" />
+            {currentConfig ? "Edit Agent Config" : "Create New Agent"}
+          </Button> 
+          {currentConfig && (
+            <AgentConfigWizard
+              onComplete={handleWizardComplete}
+            />
+          )}
+          </div>
       </div>
     </div>
   )

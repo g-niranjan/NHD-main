@@ -32,12 +32,14 @@ export class ModelFactory {
           } : undefined
         });
       //!added by niranjan  
-      case LLMProvider.Gemini:
-        return new ChatGoogleGenerativeAI ({
-          apiKey : "AIzaSyDJT1gAmnsQptt5uvrCVE0sV5DfgheA0go",
-          modelName: "gemini-3.5-sonnet",
-          temperature: 0.7
-        })  
+      case LLMProvider.Google:
+        return new ChatGoogleGenerativeAI({
+          apiKey: apiKey,
+          model: config.modelId,
+          temperature: config.defaultTemperature,
+          // contextWindow: config.contextWindow,
+          maxOutputTokens: config.maxOutputTokens
+        });
       default:
         throw new Error(`Unsupported LLM provider: ${config.provider}`);
     }
@@ -65,5 +67,5 @@ export class ModelFactory {
     if (!selectedModelId || configs.length === 0) return null;
     
     return configs.find((config: any) => config.id === selectedModelId) || null;
-  }keyName
+  }
 }

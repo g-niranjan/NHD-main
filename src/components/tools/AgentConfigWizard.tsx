@@ -354,8 +354,8 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
               
               {testResult && (
                 <div className="space-y-4">
-                  <Alert className="border-green-200 bg-green-50">
-                    <CheckCircle2 className="h-4 w-4 text-red-600" />
+                  <Alert className="border-green-200 bg-red-500">
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
                     <AlertDescription>
                       Success! Your agent responded. Click "Next" to configure response extraction.
                     </AlertDescription>
@@ -410,7 +410,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
               )}
               
               {config.messagePath && (
-                <Alert className="border-blue-200 bg-blue-50 mt-4">
+                <Alert className="border-blue-200 bg-red-500 mt-4">
                   <CheckCircle2 className="h-4 w-4 text-blue-600" />
                   <AlertDescription>
                     Input field configured: <code className="font-mono">{config.messagePath}</code>
@@ -465,8 +465,8 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
             )}
 
             {config.responsePath && (
-              <Alert className="border-green-200 bg-green-50">
-                <CheckCircle2 className="h-4 w-4 text-red-600" />
+              <Alert className="border-green-200 bg-red-500">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
                 <AlertDescription>
                   <div>Output field configured: <code className="font-mono">{config.responsePath}</code></div>
                   <div className="mt-2 text-xs">

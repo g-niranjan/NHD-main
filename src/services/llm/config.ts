@@ -1,5 +1,5 @@
-//!added by niranjan (Gemini models added)
-import { LLMProvider, AnthropicModel, OpenAIModel, GeminiModel } from './enums';
+//!added by niranjan (Google models added)
+import { LLMProvider, AnthropicModel, OpenAIModel, GoogleModel } from './enums';
 import { ModelConfig } from './types';
 
 export const MODEL_CONFIGS: Record<string, ModelConfig> = {
@@ -56,15 +56,23 @@ export const MODEL_CONFIGS: Record<string, ModelConfig> = {
   },
   //!added by niranjan
     // Gemini models
-  [GeminiModel.Sonnet3_5]: {
-    provider: LLMProvider.Gemini,
-    modelId: GeminiModel.Sonnet3_5,
-    name: 'Claude 3.5 Sonnet',
-    contextWindow: 200000,
-    maxOutputTokens: 4096,
-    defaultTemperature: 0.7
-  },
+  [GoogleModel.Gemini15Pro]: {
+  provider: LLMProvider.Google,
+  modelId: GoogleModel.Gemini15Pro,
+  name: 'Gemini 1.5 Pro',
+  contextWindow: 1048576,
+  maxOutputTokens: 8192,
+  defaultTemperature: 0.7
+},
 
+[GoogleModel.Gemini10Pro]: {
+  provider: LLMProvider.Google,
+  modelId: GoogleModel.Gemini10Pro,
+  name: 'Gemini 1.0 Pro',
+  contextWindow: 32768,
+  maxOutputTokens: 8192,
+  defaultTemperature: 0.7
+}
 };
 
 // Group models by provider for easier UI selection
@@ -80,9 +88,8 @@ export const PROVIDER_MODELS = {
     OpenAIModel.GPT35Turbo
   ],
   //!added by niranjan
-  [LLMProvider.Gemini]: [
-    GeminiModel.Sonnet3_5,
-    GeminiModel.Opus3,
-    GeminiModel.Haiku3
+  [LLMProvider.Google]: [
+    GoogleModel.Gemini15Pro,
+    GoogleModel.Gemini10Pro
   ]
 };

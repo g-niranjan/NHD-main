@@ -2,9 +2,8 @@
  * Feature flags for Community vs Enterprise editions
  * Set NEXT_PUBLIC_EDITION=enterprise in environment to enable enterprise features
  */
-//!add by niranjan
- //const isEnterprise = process.env.NEXT_PUBLIC_EDITION === 'enterprise';
- const isEnterprise = false;
+
+const isEnterprise = process.env.NEXT_PUBLIC_EDITION === 'enterprise';
 
 export const FEATURES = {
   // Core features (available in both editions)
@@ -30,7 +29,7 @@ export const FEATURES = {
 
 // Helper function to check if a feature is enabled
 export function isFeatureEnabled(feature: keyof typeof FEATURES): boolean {
-  return  true //FEATURES[feature] ?? false;
+  return FEATURES[feature] ?? false;
 }
 
 // Helper function to require enterprise edition

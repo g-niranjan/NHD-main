@@ -23,6 +23,8 @@ export const GET = withApiHandler(async (request: Request) => {
 export const POST = withApiHandler(async (request: Request) => {
 
   const body = await request.json();
+
+  console.log(`Received request to create test run with body:`, JSON.stringify(body, null, 2));
   
   const validation = safeValidateRequest(createTestRunSchema, body);
   if (!validation.success) {
@@ -137,6 +139,7 @@ export const POST = withApiHandler(async (request: Request) => {
           conversationId: conversationId,
           agentDescription: testConfig.agentDescription
         });
+        console.log(`create agent with for the test`,JSON.stringify(agent));
 
         const result = await agent.runTest(
           scenario.scenario,

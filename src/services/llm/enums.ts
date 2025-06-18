@@ -1,11 +1,9 @@
-import { Gem } from "lucide-react";
-
 export enum LLMProvider {
   Anthropic = 'anthropic',
   OpenAI = 'openai',
   //!added by niranjan
   // Add other providers as needed  
-  Gemini = 'gemini'
+  Google = 'google'
 }
 
 export enum AnthropicModel {
@@ -20,8 +18,7 @@ export enum OpenAIModel {
   GPT35Turbo = 'gpt-3.5-turbo-0125'
 }
 //!added by niranjan
-export enum GeminiModel {
-  Sonnet3_5 = 'gemini-3.5-sonnet',
-  Opus3 = 'gemini-3-opus',
-  Haiku3 = 'gemini-3-haiku'
+export enum GoogleModel {
+  Gemini15Pro = 'gemini-1.5-pro-latest',
+  Gemini10Pro = 'gemini-1.0-pro-latest'
 }

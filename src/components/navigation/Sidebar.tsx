@@ -7,7 +7,8 @@ import {
   Users,
   PlayCircle,
   ChartBarStacked,
-  LineChart
+  LineChart,
+  BadgePlus
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
@@ -33,9 +34,14 @@ export default function Sidebar() {
     },
     //!added by niranjan
     {
-      label: 'Analytics',
+      label: 'LLM Config',
+      icon: BadgePlus,
+      href: '/tools/agnet-config'
+    },
+    {
+      label: 'metrics',
       icon: LineChart,
-      href: '/tools/analytics'
+      href: '/tools/metrics'
     }
   ]
   

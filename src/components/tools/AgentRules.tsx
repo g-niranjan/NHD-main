@@ -138,7 +138,7 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
     })
   }
 
-  const rulesPass = manualResponse ? checkRules(manualResponse) : true
+  const rulesPass = manualResponse ? checkRules(manualResponse) : false
 
   // Get display name for condition
   const getConditionDisplayName = (condition: string): string => {
@@ -309,11 +309,11 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
           </div>
         )}
 
-        {/* {manualResponse && (
+        {manualResponse && (
           <Button variant="outline" size="sm" onClick={() => addRule()} className="w-full mt-2">
             <Plus className="h-3.5 w-3.5 mr-1" /> Add Custom Rule
           </Button>
-        )} */}
+        )}
       </CardContent>
     </Card>
   )

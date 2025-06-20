@@ -117,21 +117,10 @@ export default function ToolsPage() {
             </DropdownMenu>
           </div>
         </div>
-          
-          <div className="flex gap-3">
-            <Button
-            className="mb-6"
-            onClick={handleOpenWizard}
-          >
-            <Server className="h-4 w-4 mr-2" />
-            {currentConfig ? "Edit Agent Config" : "Create New Agent"}
-          </Button> 
-          {currentConfig && (
-            <AgentConfigWizard
-              onComplete={handleWizardComplete}
-            />
-          )}
-          </div>
+        <AgentConfigWizard 
+          onComplete={handleWizardComplete}
+          initialConfig={currentConfig}
+        />
       </div>
     </div>
   )

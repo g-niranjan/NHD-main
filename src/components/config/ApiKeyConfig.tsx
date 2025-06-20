@@ -26,9 +26,7 @@ import { ModelFactory } from "@/services/llm/modelfactory";
 import { Plus, Trash2 } from "lucide-react";
 import { useErrorContext } from "@/hooks/useErrorContext";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
-
-//!added by niranjan
-import{ redirect } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 
 interface ApiKeyConfigProps {
@@ -47,6 +45,8 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
   const [keyName, setKeyName] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
   const [orgId, setOrgId] = useState<string>("");
+
+    const { toast } = useToast();
   
   useEffect(() => {
     // Load saved configurations
@@ -59,15 +59,6 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
       setModelId(PROVIDER_MODELS[provider][0]);
     }
   }, [provider]);
-
-  //const router = useRouter();
-
-  const handleClose = () => {
-    setIsOpen(false);
-    // Optionally, redirect to the home page or another route
-     //router.push('/tools'); // Uncomment if you want to redirect after closing
-     redirect('/tools')
-  };
 
   const handleSaveConfig = () => {
     try {
@@ -96,8 +87,9 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
         localStorage.setItem("selected_model_id", newConfig.id);
         setSelectedModelId(newConfig.id);
       }
-      
+      toast({title:"Success",  description: newConfig.name +` added `  , duration: 20000, variant : "success" }); 
       setConfigs(updatedConfigs);
+
       resetForm();
     } catch (error) {
       errorContext.handleError(error);
@@ -108,6 +100,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
     try {
       localStorage.setItem("selected_model_id", modelId);
       setSelectedModelId(modelId);
+      toast({title:"Success",  description: `Model ${modelId} selected` , duration: 20000, variant : "success" });
     } catch (error) {
       errorContext.handleError(error);
     }
@@ -126,7 +119,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
         localStorage.removeItem("selected_model_id");
         setSelectedModelId("");
       }
-      
+      toast({title:"Success",  description: id +` deleted `  , duration: 20000, variant : "success" }); 
       setConfigs(updatedConfigs);
     } catch (error) {
       errorContext.handleError(error);
@@ -144,7 +137,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
       <DialogContent className="sm:max-w-[600px] border-border">
         <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle>LLM API Configuration</DialogTitle>
-          <DialogClose className="absolute right-4 top-4"  onClick={handleClose}/>
+          <DialogClose className="absolute right-4 top-4"/>
 
         </DialogHeader>
         

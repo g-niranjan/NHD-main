@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { AlertCircle, ChevronRight, CheckCircle2, Code2, Send, Zap, Plus, X } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import { set } from 'zod';
+import { get } from 'http';
+
+import { useToast } from '@/hooks/use-toast';
 
 interface ConfigStep {
   id: string;
@@ -41,6 +46,8 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
     responsePath: ''
   });
 
+  const { toast } = useToast();
+
   const [testResult, setTestResult] = useState<any>(null);
   const [selectedPath, setSelectedPath] = useState(config.responsePath || '');
   const [selectedInputPath, setSelectedInputPath] = useState(config.messagePath || 'message');
@@ -57,6 +64,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
       setSelectedInputPath(initialConfig.messagePath || 'message');
       setTestResult(null); // Clear test result when loading new config
       setCurrentStep(0); // Reset to first step
+      // setSelectedInputmessage(initialConfig.testMessage || 'Hello, how can you help me today?');
     }
   }, [initialConfig]);
 
@@ -72,12 +80,12 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
     try {
       const keys = path.split(/[\.\[\]]+/).filter(k => k);
       let value = obj;
-      
+
       for (const key of keys) {
         if (value === null || value === undefined) return 'N/A';
         value = value[key];
       }
-      
+
       return typeof value === 'string' ? value : JSON.stringify(value);
     } catch (error) {
       return 'N/A';
@@ -86,7 +94,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
 
   const sendTestRequest = async () => {
     setIsLoading(true);
-    
+
     try {
       // Convert headers array to object
       const headersObj = config.headers.reduce((acc, header) => {
@@ -109,16 +117,22 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
       });
 
       const result = await response.json();
-      
+
       if (result.success) {
         setTestResult(result.data);
+        //!added by niranjan to showoff the error message in UI 
+      } else if (result.error) {
+        //  toast({title:"Error",  description: result.error }); // Correct usage of toast.error
+        setTestResult(result.error);
+
       } else {
         // Show error in UI
-        toast.error(`Error: ${result.error}`);
+        //  toast({title:"Error",  description: result.error }); // Correct usage of toast.error
+
       }
     } catch (error) {
       console.error('Error testing agent:', error);
-      toast.error('Failed to test agent. Please check your configuration.');
+      // toast.error('Failed to test agent. Please check your configuration.');
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +143,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
       const currentPath = path ? `${path}.${key}` : key;
       const isArray = Array.isArray(obj);
       const displayPath = isArray ? `${path}[${key}]` : currentPath;
-      
+
       if (typeof value === 'object' && value !== null) {
         return (
           <div key={currentPath} style={{ marginLeft: `${level * 20}px` }}>
@@ -143,23 +157,24 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
           </div>
         );
       }
-      
+
       const selectedValue = isInputSelection ? selectedInputPath : selectedPath;
       const setSelectedValue = isInputSelection ? setSelectedInputPath : setSelectedPath;
-      
+
       return (
-        <div 
-          key={currentPath} 
+        <div
+          key={currentPath}
           style={{ marginLeft: `${level * 20}px` }}
-          className={`text-sm py-1 px-2 rounded cursor-pointer transition-colors ${
-            selectedValue === displayPath 
-              ? 'bg-primary text-primary-foreground' 
-              : 'hover:bg-muted'
-          }`}
+          className={`text-sm py-1 px-2 rounded cursor-pointer transition-colors ${selectedValue === displayPath
+            ? 'bg-primary text-primary-foreground'
+            : 'hover:bg-muted'
+            }`}
           onClick={() => {
             setSelectedValue(displayPath);
             if (isInputSelection) {
-              setConfig({ ...config, messagePath: displayPath });
+              // setConfig({ ...config, messagePath: displayPath });
+              setConfig(config => (
+                { ...config, messagePath: displayPath, testMessage: getValueFromPath(config.requestBody, displayPath) }));
             }
           }}
         >
@@ -181,7 +196,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
               <h3 className="text-lg font-semibold mb-2">Let's start by understanding your agent</h3>
               <p className="text-muted-foreground">This information helps generate better tests</p>
             </div>
-            
+
             <div>
               <Label htmlFor="name">Agent Name</Label>
               <Input
@@ -314,12 +329,12 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   const newText = e.target.value;
                   console.log('Request body changed:', newText);
                   setRequestBodyText(newText);
-                  
+
                   try {
                     const parsed = JSON.parse(newText);
                     console.log('Parsed request body:', parsed);
-                    setConfig(prev => ({ 
-                      ...prev, 
+                    setConfig(prev => ({
+                      ...prev,
                       requestBody: parsed,
                       responsePath: '' // Reset response path when body changes
                     }));
@@ -333,11 +348,11 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                 }}
               />
             </div>
-            
+
             <div className="pt-4 border-t">
               <div className="flex items-center justify-between mb-2">
                 <Label>Test Your Connection</Label>
-                <Button 
+                <Button
                   onClick={sendTestRequest}
                   disabled={!config.endpoint || isLoading}
                 >
@@ -351,8 +366,8 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   )}
                 </Button>
               </div>
-              
-              {testResult && (
+              {/* //! added by niranjan commented out the test result display for now */}
+              {/* {testResult && (
                 <div className="space-y-4">
                   <Alert className="border-green-200 bg-red-500">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -368,7 +383,37 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                     </div>
                   </div>
                 </div>
+              )} */}
+
+              {testResult && (
+                <div className="space-y-4">
+                  {testResult.error ? (
+                    <Alert className="border-red-200 bg-red-500">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        {testResult.error}
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <>
+                      <Alert className="border-green-200 bg-red-500">
+                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                        <AlertDescription>
+                          Success! Your agent responded. Click "Next" to configure response extraction.
+                        </AlertDescription>
+                      </Alert>
+
+                      <div>
+                        <Label className="text-sm">Response from your agent:</Label>
+                        <div className="mt-1 p-3 bg-muted rounded-md font-mono text-xs max-h-64 overflow-auto">
+                          <pre>{JSON.stringify(testResult, null, 2)}</pre>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               )}
+
             </div>
           </div>
         );
@@ -382,14 +427,14 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
               <p className="text-sm text-muted-foreground mb-4">
                 Click on the field where test messages should be placed
               </p>
-              
+
               <div>
                 <Label>Your Request Structure:</Label>
                 <div className="mt-2 p-4 bg-muted rounded-md font-mono text-sm">
                   {renderJsonTree(config.requestBody, '', 0, true)}
                 </div>
               </div>
-              
+
               {selectedInputPath && (
                 <div className="flex items-center gap-2 p-3 bg-muted rounded-md mt-4">
                   <CheckCircle2 className="h-4 w-4 text-blue-500" />
@@ -400,7 +445,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                     variant="outline"
                     onClick={() => {
                       setConfig({ ...config, messagePath: selectedInputPath });
-                      toast.success('Input path set successfully');
+                      toast({ title: "Success", description: 'Input path set successfully', duration: 2000, variant: "success" }); // Correct usage of toast.error
                     }}
                     className="ml-auto"
                   >
@@ -408,12 +453,15 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   </Button>
                 </div>
               )}
-              
+
               {config.messagePath && (
                 <Alert className="border-blue-200 bg-red-500 mt-4">
                   <CheckCircle2 className="h-4 w-4 text-blue-600" />
                   <AlertDescription>
                     Input field configured: <code className="font-mono">{config.messagePath}</code>
+                    <div className="mt-2 text-xs">
+                      Preview: "{getValueFromPath(config.requestBody, config.messagePath)}"
+                    </div>
                   </AlertDescription>
                 </Alert>
               )}
@@ -427,7 +475,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
               <p className="text-sm text-muted-foreground mb-4">
                 Click on the field in your agent's response that contains the message text
               </p>
-              
+
               {testResult ? (
                 <div>
                   <Label>Your Agent's Response:</Label>
@@ -455,12 +503,13 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   variant="outline"
                   onClick={() => {
                     setConfig({ ...config, responsePath: selectedPath });
-                    toast.success('Response path set successfully');
+                    toast({ title: "Success", description: 'Output path set successfully', duration: 2000, variant: "info" });
                   }}
                   className="ml-auto"
                 >
                   Use This Path
                 </Button>
+                {/* <Toaster  position="bottom-right" richColors={true} /> */}
               </div>
             )}
 
@@ -486,7 +535,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
               <h3 className="text-lg font-semibold mb-2">Configuration Complete!</h3>
               <p className="text-muted-foreground">Here's a summary of your agent configuration</p>
             </div>
-            
+
             <div className="space-y-4">
               <div className="p-4 bg-muted rounded-lg">
                 <h4 className="font-medium mb-2">Agent Details</h4>
@@ -496,7 +545,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   <div><span className="text-muted-foreground">Response Path:</span> <code>{config.responsePath}</code></div>
                 </div>
               </div>
-              
+
               <div className="p-4 bg-muted rounded-lg">
                 <h4 className="font-medium mb-2">Test Summary</h4>
                 <div className="text-sm">
@@ -507,9 +556,9 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                 </div>
               </div>
             </div>
-            
+
             <div className="flex justify-center pt-4">
-              <Button 
+              <Button
                 size="lg"
                 onClick={async () => {
                   try {
@@ -563,13 +612,12 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                     }
 
                     const savedAgent = await response.json();
-                    toast.success(config.id ? 'Agent configuration updated successfully!' : 'Agent configuration saved successfully!');
-                    
+                     toast({title:"Success",  description:config.id ? 'Agent configuration updated successfully!' : 'Agent configuration saved successfully!'  , duration: 2000, variant : "info" }); 
+
                     // Call the onComplete callback if provided
                     onComplete?.(savedAgent);
                   } catch (error) {
                     console.error('Error saving agent configuration:', error);
-                    toast.error('Failed to save agent configuration');
                   }
                 }}
               >
@@ -589,17 +637,15 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
           {steps.map((step, index) => (
             <React.Fragment key={step.id}>
               <div className="flex items-center">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${
-                  index <= currentStep 
-                    ? 'bg-primary text-primary-foreground border-primary' 
-                    : 'border-muted-foreground/50 text-muted-foreground'
-                }`}>
+                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${index <= currentStep
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'border-muted-foreground/50 text-muted-foreground'
+                  }`}>
                   {step.completed ? <CheckCircle2 className="h-5 w-5" /> : index + 1}
                 </div>
                 <div className="ml-3 mr-2">
-                  <p className={`text-sm font-medium whitespace-nowrap ${
-                    index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
-                  }`}>
+                  <p className={`text-sm font-medium whitespace-nowrap ${index <= currentStep ? 'text-foreground' : 'text-muted-foreground'
+                    }`}>
                     {step.title}
                   </p>
                 </div>

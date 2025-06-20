@@ -10,7 +10,7 @@ import { QaAgentConfig } from './types';
  * Updated to work with adaptive conversation approach
  */
 export class ConversationProcessor {
-  private model;
+  private model;ConversationProcessor
   private config: QaAgentConfig;
 
   constructor(model: any, config: QaAgentConfig) {

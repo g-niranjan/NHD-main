@@ -60,10 +60,17 @@ export class ConversationProcessor {
         throw error;
       }
       const responseTime = Date.now() - startTime;
-      
+
+
+      console.log("API response:", apiResponse);
+
       // Extract chat response
       const chatResponse = apiResponse?.response?.text || 
         ConversationHandler.extractChatResponse(apiResponse, this.config.apiConfig.rules);
+
+        //!added by niranjan
+        console.log("input message:", message);
+      console.log("Chat response:", chatResponse);
       
       // Save to memory
       await memory.saveContext(

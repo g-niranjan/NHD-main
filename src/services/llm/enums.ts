@@ -20,5 +20,7 @@ export enum OpenAIModel {
 //!added by niranjan
 export enum GoogleModel {
   Gemini15Pro = 'gemini-1.5-pro-latest',
-  Gemini10Pro = 'gemini-1.0-pro-latest'
+  Gemini10Pro = 'gemini-1.0-pro-latest',
+  Gemini1_5Flash = 'gemini-1.5-flash-latest',
+  Gemini2_5Flash = 'gemini-2.5-flash-latest',
 }

@@ -22,10 +22,20 @@ export default function Sidebar() {
       icon: Home,
       href: '/tools'
     },
+    // {
+    //   label: 'Personas',
+    //   icon: Users,
+    //   href: '/tools/personas'
+    // },
     {
       label: 'Scenarios',
       icon: BookOpen,
       href: '/tools/test-cases'
+    },
+    {
+      label: 'Agent Rules',
+      icon: ChartBarStacked,
+      href: '/tools/agent-rules'
     },
     {
       label: 'Test Runs',
@@ -39,7 +49,7 @@ export default function Sidebar() {
       href: '/tools/agnet-config'
     },
     {
-      label: 'metrics',
+      label: 'Metrics',
       icon: LineChart,
       href: '/tools/metrics'
     }

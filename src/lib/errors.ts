@@ -1,5 +1,5 @@
 /**
- * @file Centralized error handling utilities for the NotHotDog platform
+ * @file Centralized error handling utilities for the GenAI Test Suite platform
  */
 
 /**

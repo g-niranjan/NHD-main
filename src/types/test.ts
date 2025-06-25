@@ -31,5 +31,3 @@ export interface ConversationStep {
     nextStep: string;
   }>;
 }
-
-// TestSet moved to @/types/test-sets to avoid duplication

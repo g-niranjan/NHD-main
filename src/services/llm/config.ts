@@ -72,6 +72,22 @@ export const MODEL_CONFIGS: Record<string, ModelConfig> = {
   contextWindow: 32768,
   maxOutputTokens: 8192,
   defaultTemperature: 0.7
+},
+[GoogleModel.Gemini1_5Flash]: {
+  provider: LLMProvider.Google,
+  modelId: GoogleModel.Gemini1_5Flash,
+  name: 'Gemini 1.5 flash',
+  contextWindow: 32768,
+  maxOutputTokens: 8192,
+  defaultTemperature: 0.7
+},
+[GoogleModel.Gemini2_5Flash]: {
+  provider: LLMProvider.Google,
+  modelId: GoogleModel.Gemini2_5Flash,
+  name: 'Gemini 2.5 flash',
+  contextWindow: 32768,
+  maxOutputTokens: 8192,
+  defaultTemperature: 0.7
 }
 };
 
@@ -90,6 +106,8 @@ export const PROVIDER_MODELS = {
   //!added by niranjan
   [LLMProvider.Google]: [
     GoogleModel.Gemini15Pro,
-    GoogleModel.Gemini10Pro
+    GoogleModel.Gemini10Pro,
+    GoogleModel.Gemini1_5Flash,
+    GoogleModel.Gemini2_5Flash
   ]
 };

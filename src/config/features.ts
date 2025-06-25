@@ -37,7 +37,7 @@ export function requireEnterprise(featureName: string): void {
   if (!isEnterprise) {
     throw new Error(
       `${featureName} is only available in the Enterprise edition. ` +
-      `Visit https://nothotdog.ai/enterprise for more information.`
+      `Visit https://GenAI Test Suite.ai/enterprise for more information.`
     );
   }
 }

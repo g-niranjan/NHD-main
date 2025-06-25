@@ -10,6 +10,8 @@ import { config } from "dotenv";
 export class ModelFactory {
   static createLangchainModel(modelId: string, apiKey: string, extraParams: Record<string, any> = {}): BaseChatModel {
     const config = MODEL_CONFIGS[modelId];
+    //!added by niranjan
+    console.log("Model configuration:", config);
     if (!config) {
       throw new Error(`Model configuration not found for ${modelId}`);
     }

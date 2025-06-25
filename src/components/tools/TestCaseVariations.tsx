@@ -87,6 +87,7 @@ export function TestCaseVariations({
       setShowApiKeyWarning(true);
       return;
     }
+     console.log("Generating test cases with model config:", modelConfig);
 
     await errorContext.withErrorHandling(async () => {
       const response = await fetch(`/api/tools/generate-tests`, {
@@ -100,6 +101,12 @@ export function TestCaseVariations({
         },
         body: JSON.stringify({ testId: selectedTestId }),
       });
+      //!addd by niranjan
+      console.log("Generate test cases response:", response);
+      if (!response.ok && response.status === 403) {
+        setShowApiKeyWarning(true);
+        return;
+      }
 
       if (!response.ok) {
         const data = await response.json();
@@ -139,6 +146,8 @@ export function TestCaseVariations({
 
     const existsInServer = cachedVariationData &&
       cachedVariationData.testCases.some((tc) => tc.id === editingId);
+
+      console.log("Saving test case:", editedTestCase);
 
     const payload: TestVariation = {
       id: existsInServer ? editingId : crypto.randomUUID(),

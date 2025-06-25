@@ -2,8 +2,6 @@
 'use client'
 
 import { MetricsPanel } from '@/components/tools/metrics/MetricsPanel';
-import  AgentRules  from '@/components/tools/AgentRules';
-import { Rule } from '@/services/agents/claude';
 
 
 export default function AnalyticsPage() {
@@ -17,23 +15,8 @@ of your application, helping you make data-driven decisions.</p>
       {/* Render the MetricsPanel component */}
 
       <div className="bg-card text-card-foreground border border-border p-6 rounded-lg">
-        
-        <AgentRules manualResponse={undefined} rules={[{
-      path: 'question',
-      condition: '=',
-      value: 'can you help me out to find the python developer roles in bangalore',
-      id : '1234',
-      isValid : true,
-    },
-    {
-      path: 'message',
-      condition: '=',
-      value: 'Agent returned 500:',
-      id : '1235',
-      isValid : true,
-    }]} setRules={function (rules: Rule[]): void {
-          throw new Error('Function not implemented.');
-        } } agentId={''} />
+        <MetricsPanel responseTime={[]} />
+
       </div>
     </div>
   )

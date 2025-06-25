@@ -103,6 +103,7 @@ export class ValidationService {
         ? resultWithoutMetrics.content
         : JSON.stringify(resultWithoutMetrics.content);
       let expectedOutputEvaluation;
+      console.log("Expected Output Evaluation Content:", contentWithoutMetrics);
       try {
         expectedOutputEvaluation = JSON.parse(contentWithoutMetrics);
       } catch (error) {

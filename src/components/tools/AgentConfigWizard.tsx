@@ -579,13 +579,13 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                         {
                           path: config.messagePath,
                           condition: 'exists',
-                          value: '',
+                          value: config.requestBody ? getValueFromPath(config.requestBody, config.messagePath) : 'N/A',
                           description: 'Input message field'
                         },
                         {
                           path: config.responsePath,
                           condition: 'exists',
-                          value: '',
+                          value: testResult ? getValueFromPath(testResult, config.responsePath) : 'N/A',
                           description: 'Response message field'
                         }
                       ],

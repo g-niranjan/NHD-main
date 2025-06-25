@@ -61,8 +61,10 @@ export const POST = withApiHandler(async (request: Request) => {
 
   const personaMapping = await dbService.getPersonaMappingByAgentId(testId);
   const testVariations = await dbService.getTestVariations(testId);
+  console.log('testVariations: ', testVariations);
   
   const scenarios = testVariations.testCases;
+  console.log('scenarios: ', scenarios);
   const selectedPersonas = personaMapping.personaIds || [];
   const enabledScenarios = scenarios.filter(scenario => scenario.enabled !== false);
   const totalRuns = enabledScenarios.length * selectedPersonas.length;
@@ -151,11 +153,30 @@ export const POST = withApiHandler(async (request: Request) => {
           );
         });
 
+        console.log(`"result ----" ${JSON.stringify(result.conversation.allMessages)  }`);
+
         const agentMetrics = await dbService.getMetricsForAgent(testId);
-        
+        //! added by niranjan (commented to test the human version)
+        // const conversationValidation = await agent.validateFullConversation(
+        //   result.conversation.allMessages
+        //     .map(m => `${m.role === 'user' ? 'Human' : 'Assistant'}: ${m.content}`)
+        //     .join('\n\n'),
+        //   scenario.scenario,
+        //   scenario.expectedOutput || '',
+        //   agentMetrics
+        // ).catch(err => {
+        //   throw new ExternalAPIError(
+        //     `Failed to validate conversation: ${err instanceof Error ? err.message : String(err)}`,
+        //     err
+        //   );
+        // });
+
+console.log(`"agentMetrics ----" ${JSON.stringify(agentMetrics)}`);
+        console.log('  scenario.scenario, : ',   scenario.scenario)
+        console.log('  scenario.expectedOutput, : ',   scenario.expectedOutput)
         const conversationValidation = await agent.validateFullConversation(
           result.conversation.allMessages
-            .map(m => `${m.role === 'user' ? 'Human' : 'Assistant'}: ${m.content}`)
+            .map(m => `${m.role === 'user' ? 'Assistant' : 'Human'}: ${m.content}`)
             .join('\n\n'),
           scenario.scenario,
           scenario.expectedOutput || '',
@@ -165,7 +186,10 @@ export const POST = withApiHandler(async (request: Request) => {
             `Failed to validate conversation: ${err instanceof Error ? err.message : String(err)}`,
             err
           );
+          console.log( `Failed to validate conversation: ${err instanceof Error ? err.message : String(err)}`,err)
         });
+        
+        // console.log(`"conversationValidation ----" ${JSON.stringify(conversationValidation)}`);
 
         const chat: Conversation = {
           id: conversationId,
@@ -200,12 +224,16 @@ export const POST = withApiHandler(async (request: Request) => {
           conversationValidation // pass the validation result to be saved
         );
 
+        // console.log('chat: ------------ ', JSON.stringify(chat, null, 2));
+        console.log('conversationValidation: ', conversationValidation);
+        
         completedChats.push(chat);
         testRun.metrics.passed += conversationValidation.isCorrect ? 1 : 0;
         testRun.metrics.failed += conversationValidation.isCorrect ? 0 : 1;
         testRun.metrics.correct += conversationValidation.isCorrect ? 1 : 0;
         testRun.metrics.incorrect += conversationValidation.isCorrect ? 0 : 1;
-        
+  console.log(' testRun.metrics: inside loop',  JSON.stringify(testRun.metrics));
+
       } catch (error) {
         // Update the test conversation's status to 'failed'
         const errorMessage = error instanceof Error ? error.message : String(error);
@@ -238,7 +266,7 @@ export const POST = withApiHandler(async (request: Request) => {
       }
     }
   }
-
+  console.log(' testRun.metrics: ',  JSON.stringify(testRun.metrics));
   testRun.chats = completedChats;
   testRun.status = 'completed' as const;
   

@@ -129,6 +129,7 @@ export class AgentConfigService {
               name: config.name,
               endpoint: config.endpoint,
               input_format: input_format,
+              updated_at: new Date()
             }
           });
 

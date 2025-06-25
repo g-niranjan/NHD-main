@@ -51,7 +51,7 @@ export class QaAgent {
     ]);
     
     this.memory = new BufferMemory({
-      returnMessages: true,
+      returnMessages: false,
       memoryKey: "chat_history",
       inputKey: "input",
     });

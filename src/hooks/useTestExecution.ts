@@ -60,8 +60,13 @@ export function useTestExecution() {
         setStatus('running');
         
         // Execute the test run
+        console.log(`Executing test run for test ID: ${testId}`);
+        console.log('Using headers:', headers);
+
         const response = await ApiClient.post('/api/tools/test-runs', { testId }, { headers });
         const completedRun = response.data || response;
+
+        console.log('Test run completed:', response);
         
         // Update status to completed
         setStatus('completed');

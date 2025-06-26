@@ -78,11 +78,12 @@ export const agentConfigSchema = z.object({
   input: z.string().optional(),
   agent_response: z.string().optional(),
   rules: z.array(z.object({
+    id : z.string(),
     path: z.string(),
     condition: z.string(),
     value: z.string(),
-    description: z.string()
-  })),
+    description: z.string().optional()
+  })).optional().default([]),
   responseTime: z.number().optional(),
   agentDescription: z.string().optional(),
   userDescription: z.string().optional(),

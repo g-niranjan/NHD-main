@@ -147,6 +147,7 @@ export const POST = withApiHandler(async (request: Request) => {
           scenario.scenario,
           scenario.expectedOutput || ''
         ).catch(err => {
+          console.log(`Error running test for scenario ${scenario.scenario} with persona ${personaId}:`, err);
           throw new ExternalAPIError(
             `Failed to run test: ${err instanceof Error ? err.message : String(err)}`,
             err
@@ -171,7 +172,7 @@ export const POST = withApiHandler(async (request: Request) => {
         //   );
         // });
 
-console.log(`"agentMetrics ----" ${JSON.stringify(agentMetrics)}`);
+        console.log(`"agentMetrics ----" ${JSON.stringify(agentMetrics)}`);
         console.log('  scenario.scenario, : ',   scenario.scenario)
         console.log('  scenario.expectedOutput, : ',   scenario.expectedOutput)
         const conversationValidation = await agent.validateFullConversation(

@@ -15,6 +15,7 @@ import { set } from 'zod';
 import { get } from 'http';
 
 import { useToast } from '@/hooks/use-toast';
+import AgentRules from './AgentRules';
 
 interface ConfigStep {
   id: string;
@@ -54,6 +55,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
   const [isLoading, setIsLoading] = useState(false);
   const [showInputSelector, setShowInputSelector] = useState(false);
   const [requestBodyText, setRequestBodyText] = useState(JSON.stringify(config.requestBody, null, 2));
+  const [rules, setRules] = useState<any[]>(config.rules || []); // Assuming rules is an array of objects
 
   // Update config when initialConfig changes (e.g., when loading an agent)
   useEffect(() => {
@@ -65,6 +67,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
       setTestResult(null); // Clear test result when loading new config
       setCurrentStep(0); // Reset to first step
       // setSelectedInputmessage(initialConfig.testMessage || 'Hello, how can you help me today?');
+      setRules(initialConfig.rules || []); // Load rules if available
     }
   }, [initialConfig]);
 
@@ -119,7 +122,30 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
       const result = await response.json();
 
       if (result.success) {
+      toast({ title: "Success", description: 'api calling success', duration : 20000 ,variant: "success" });
         setTestResult(result.data);
+        // //!added by niranjan , loading the existing rules if available
+        // try {
+        //   const rulesResponse = await fetch(`/api/tools/agent-rules?agentId=${config.agentId}`,{
+        //     method : 'GET',
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //     } 
+        //   });
+        //   if (!rulesResponse.ok) {
+        //     throw new Error('Failed to fetch rules');
+        //   }
+        //   const rulesData = await rulesResponse.json();
+        //   setRules(rulesData.rules || []);
+        //   toast({ title: "Success", description: 'Retrived validation rules', duration : 20000 ,variant: "success" });
+
+        // } catch (error) {
+        //   console.error('Error fetching rules:', error);
+        //   toast({ title: "Error", description: 'Failed to fetch validation rules', duration : 20000 ,variant: "destructive" });
+        // }
+        setRules(config.rules || []);
+        toast({ title: "Success", description: 'Retrived validation rules', duration : 20000 ,variant: "success" });
+
         //!added by niranjan to showoff the error message in UI 
       } else if (result.error) {
         //  toast({title:"Error",  description: result.error }); // Correct usage of toast.error
@@ -524,6 +550,19 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                 </AlertDescription>
               </Alert>
             )}
+            {/* Rule Configuration Section */}
+            <div className="space-y-6 mt-6">
+              <h3 className="font-medium mb-2">3. Configure Validation Rules</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+              Set rules to validate the input and output fields. These rules will be used to ensure your agent behaves as expected.
+              </p> 
+              <AgentRules
+                    manualResponse={testResult}
+                    rules={rules}
+                    setRules={setRules}
+                    agentId={config.agentId || ''}
+                  />    
+            </div>
           </div>
         );
 
@@ -575,20 +614,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                       input: JSON.stringify(config.requestBody),
                       agentDescription: config.description,
                       userDescription: config.userDescription,
-                      rules: [
-                        {
-                          path: config.messagePath,
-                          condition: 'exists',
-                          value: config.requestBody ? getValueFromPath(config.requestBody, config.messagePath) : 'N/A',
-                          description: 'Input message field'
-                        },
-                        {
-                          path: config.responsePath,
-                          condition: 'exists',
-                          value: testResult ? getValueFromPath(testResult, config.responsePath) : 'N/A',
-                          description: 'Response message field'
-                        }
-                      ],
+                      rules: rules,
                       agent_response: JSON.stringify(testResult),
                       responseTime: 0
                     };

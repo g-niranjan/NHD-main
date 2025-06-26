@@ -9,23 +9,7 @@ import { ErrorProvider } from '@/hooks/useErrorContext';
 // Or, if you have a custom Toaster component, ensure it is exported as a React component:
 import { Toaster } from '@/components/ui/toaster';
 //! added by niranjan for theme toggle
-import { useTheme } from 'next-themes'
-import { Sun, Moon } from 'lucide-react'
-
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-
-  return (
-    <button
-      aria-label="Toggle Theme"
-      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-      className="fixed top-2 right-4 z-50 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white shadow-md"
-      type="button"
-    >
-      {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-    </button>
-  );
-}
+import { ThemeToggle } from '@/components/ui/theme-toggler';
 
 const inter = Inter({ subsets: ['latin'] })
 

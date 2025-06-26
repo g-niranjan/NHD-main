@@ -59,7 +59,8 @@ export default function ToolsPage() {
         requestBody: data.inputFormat || { message: 'Hello, how can you help me today?' },
         messagePath: data.rules?.find((r: any) => r.description === 'Input message field')?.path || 'message',
         responsePath: data.rules?.find((r: any) => r.description === 'Response message field')?.path || '',
-        id: data.id // Include the ID for updates
+        id: data.id, // Include the ID for updates
+        rules : data.rules
       };
       
       setCurrentConfig(loadedConfig);

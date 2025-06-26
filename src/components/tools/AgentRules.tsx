@@ -49,7 +49,7 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
       const value = getValueByPath(response, rule.path)
       switch (rule.condition) {
         case "=":
-          return value === rule.value
+          return value == rule.value
         case "!=":
           return value !== rule.value
         case ">":
@@ -308,12 +308,13 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
             {renderObject(manualResponse)}
           </div>
         )}
-
+        //!commented by niranjan, right now we are not allowing custom rules
+{/* 
         {manualResponse && (
-          <Button variant="outline" size="sm" onClick={() => addRule()} className="w-full mt-2">
+          <Button variant="outline" size="sm" onClick={() => addRule(hoveredPath)} className="w-full mt-2">
             <Plus className="h-3.5 w-3.5 mr-1" /> Add Custom Rule
           </Button>
-        )}
+        )} */}
       </CardContent>
     </Card>
   )

@@ -191,19 +191,29 @@ export class ConversationProcessor {
       const memoryVariables = await memory.loadMemoryVariables({});
       const history = memoryVariables.chat_history;
       
-      // Prepare generation prompt
+      
       const generationPrompt = `
-        Test scenario: ${scenario}
-        Expected behavior: ${expectedOutput}
-        
-        Current conversation history:
-        ${JSON.stringify(history)}
-        
-        Based on the conversation so far, generate the next message you would send
-        to continue testing this scenario. Stay in character and be natural.
-        
-        Next message:
-      `;
+  AS A HUMAN USER with the personality traits described earlier,
+  your goal is: ${scenario}
+  Expected behavior: ${expectedOutput}
+  Here's the conversation so far:
+  ${JSON.stringify(history)}
+
+  Write your next message to the AI assistant.
+
+  IMPORTANT REMINDERS:
+  - Write ONLY what a real human would type in a chat interface
+  - NO roleplaying elements (like "*sighs*" or "*excited tone*")
+  - NO theatrical descriptions of actions or emotions
+  - Just write plain text like a normal person typing a message
+  - DO NOT ask the assistant any clarifying or follow-up questions.
+  - DO NOT request more information from the assistant.
+  - Only respond as a user would, based on the scenario and conversation so far.
+
+  After your message, on a separate line, indicate if the conversation should end:
+  COMPLETE: true (if the AI has successfully addressed your needs)
+  COMPLETE: false (if you still need more information or help)
+  `;
       
       // Get next message
       const result = await chain.invoke({ input: generationPrompt });

@@ -48,10 +48,12 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
     return rules.every((rule) => {
       const value = getValueByPath(response, rule.path)
       switch (rule.condition) {
-        case "=":
-          return value == rule.value
+        case "==":
+          return value === rule.value
         case "!=":
           return value !== rule.value
+        case "=":
+          return value == rule.value // Use loose equality for "="    
         case ">":
           return Number(value) > Number(rule.value)
         case "<":
@@ -87,6 +89,9 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
           return value !== null && value !== undefined
         case "chat":
           return typeof value === "string" && value.length > 0 // Chat validation logic
+        case "boolean":
+          if(typeof value === "boolean" && value.toString() === "true")  return true;
+          return false; 
         default:
           return false
       }
@@ -138,15 +143,17 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
     })
   }
 
-  const rulesPass = manualResponse ? checkRules(manualResponse) : false
+  const rulesPass = manualResponse ? checkRules(manualResponse) : true
 
   // Get display name for condition
   const getConditionDisplayName = (condition: string): string => {
     switch (condition) {
-      case "=":
+      case "==":
         return "equals"
       case "!=":
         return "not equals"
+      case "=":
+        return "equal"  
       case ">":
         return "greater than"
       case "<":
@@ -177,6 +184,8 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
         return "is not null"
       case "chat":
         return "is chat"
+      case "boolean":
+        return "is boolean"  
       default:
         return condition
     }
@@ -254,8 +263,9 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="=">equals</SelectItem>
+                        <SelectItem value="==">equals</SelectItem>
                         <SelectItem value="!=">not equals</SelectItem>
+                        <SelectItem value="=">equal</SelectItem>
                         <SelectItem value="contains">contains</SelectItem>
                         <SelectItem value="not_contains">not contains</SelectItem>
                         <SelectItem value="starts_with">starts with</SelectItem>
@@ -271,6 +281,7 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
                         <SelectItem value="null">is null</SelectItem>
                         <SelectItem value="not_null">not null</SelectItem>
                         <SelectItem value="chat">chat</SelectItem>
+                        <SelectItem value="boolean">boolean</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -308,7 +319,7 @@ export default function AgentRules({ manualResponse, rules, setRules, agentId }:
             {renderObject(manualResponse)}
           </div>
         )}
-        //!commented by niranjan, right now we are not allowing custom rules
+        {/* //!commented by niranjan, right now we are not allowing custom rules */}
 {/* 
         {manualResponse && (
           <Button variant="outline" size="sm" onClick={() => addRule(hoveredPath)} className="w-full mt-2">

@@ -23,8 +23,6 @@ export const GET = withApiHandler(async (request: Request) => {
 export const POST = withApiHandler(async (request: Request) => {
 
   const body = await request.json();
-
-  console.log(`Received request to create test run with body:`, JSON.stringify(body, null, 2));
   
   const validation = safeValidateRequest(createTestRunSchema, body);
   if (!validation.success) {
@@ -61,10 +59,10 @@ export const POST = withApiHandler(async (request: Request) => {
 
   const personaMapping = await dbService.getPersonaMappingByAgentId(testId);
   const testVariations = await dbService.getTestVariations(testId);
-  console.log('testVariations: ', testVariations);
+  // console.log('testVariations: ', testVariations);
   
   const scenarios = testVariations.testCases;
-  console.log('scenarios: ', scenarios);
+  // console.log('scenarios: ', scenarios);
   const selectedPersonas = personaMapping.personaIds || [];
   const enabledScenarios = scenarios.filter(scenario => scenario.enabled !== false);
   const totalRuns = enabledScenarios.length * selectedPersonas.length;
@@ -141,52 +139,37 @@ export const POST = withApiHandler(async (request: Request) => {
           conversationId: conversationId,
           agentDescription: testConfig.agentDescription
         });
-        console.log(`create agent with for the test`,JSON.stringify(agent));
 
+        // console.log(`"agent ----"`);
         const result = await agent.runTest(
           scenario.scenario,
           scenario.expectedOutput || ''
+
         ).catch(err => {
-          console.log(`Error running test for scenario ${scenario.scenario} with persona ${personaId}:`, err);
           throw new ExternalAPIError(
             `Failed to run test: ${err instanceof Error ? err.message : String(err)}`,
             err
           );
         });
 
-        console.log(`"result ----" ${JSON.stringify(result.conversation.allMessages)  }`);
+        // console.log(`"result ----" ${JSON.stringify(result.conversation.allMessages)  }`);
 
         const agentMetrics = await dbService.getMetricsForAgent(testId);
-        //! added by niranjan (commented to test the human version)
-        // const conversationValidation = await agent.validateFullConversation(
-        //   result.conversation.allMessages
-        //     .map(m => `${m.role === 'user' ? 'Human' : 'Assistant'}: ${m.content}`)
-        //     .join('\n\n'),
-        //   scenario.scenario,
-        //   scenario.expectedOutput || '',
-        //   agentMetrics
-        // ).catch(err => {
-        //   throw new ExternalAPIError(
-        //     `Failed to validate conversation: ${err instanceof Error ? err.message : String(err)}`,
-        //     err
-        //   );
-        // });
-
-        console.log(`"agentMetrics ----" ${JSON.stringify(agentMetrics)}`);
-        console.log('  scenario.scenario, : ',   scenario.scenario)
-        console.log('  scenario.expectedOutput, : ',   scenario.expectedOutput)
+        // console.log(`"agentMetrics ----" ${JSON.stringify(agentMetrics)}`);
+        // console.log('  scenario.scenario, : ',   scenario.scenario)
+        // console.log('  scenario.expectedOutput, : ',   scenario.expectedOutput)
         const conversationValidation = await agent.validateFullConversation(
           result.conversation.allMessages
-            .map(m => `${m.role === 'user' ? 'Assistant' : 'Human'}: ${m.content}`)
+            .map(m => `${m.role === 'user' ? 'Human' : 'Assistant'}: ${m.content}`)
             .join('\n\n'),
           scenario.scenario,
           scenario.expectedOutput || '',
           agentMetrics
         ).catch(err => {
-          throw new ExternalAPIError(
-            `Failed to validate conversation: ${err instanceof Error ? err.message : String(err)}`,
-            err
-          );
+          // throw new ExternalAPIError(
+          //   `Failed to validate conversation: ${err instanceof Error ? err.message : String(err)}`,
+          //   err
+          // );
           console.log( `Failed to validate conversation: ${err instanceof Error ? err.message : String(err)}`,err)
         });
         
@@ -226,7 +209,7 @@ export const POST = withApiHandler(async (request: Request) => {
         );
 
         // console.log('chat: ------------ ', JSON.stringify(chat, null, 2));
-        console.log('conversationValidation: ', conversationValidation);
+        // console.log('conversationValidation: ', conversationValidation);
         
         completedChats.push(chat);
         testRun.metrics.passed += conversationValidation.isCorrect ? 1 : 0;

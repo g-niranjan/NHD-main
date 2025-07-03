@@ -31,9 +31,10 @@ export default function RootLayout({
             <ErrorProvider>
               <header className="flex justify-between items-center px-4 py-2 border-b border-border bg-card">
                 <div className="flex items-center gap-2">
+                  <img src="isteer_logo.png" alt="GenAI Logo" className="h-12 w-30" />
                   <h1 className="text-xl font-bold text-orange-500">GenAI Test Suite</h1>
                   <span className="text-xs text-muted-foreground uppercase tracking-wider border-l border-muted pl-2">
-                    Agent Testing Framework - Community Edition
+                    Agent Testing Framework 
                   </span>
                   <ThemeToggle />
                   <Toaster />

@@ -79,6 +79,7 @@ export class AgentConfigService {
         agentDescription: config.agent_descriptions?.[0]?.description ?? "",
         userDescription: config.agent_user_descriptions?.[0]?.description ?? "",
         rules: config.validation_rules.map(r => ({
+          id : r.id,
           path: r.path,
           condition: r.condition,
           value: r.expected_value,
@@ -233,6 +234,65 @@ export class AgentConfigService {
   
   async deleteAgentConfig(configId: string): Promise<{ deleted: boolean }> {
     try {
+
+      // // Step 7: Delete the test runs itself
+      // await prisma.test_runs.deleteMany({
+      //   where: { agent_id: configId },
+      // });
+
+
+      const scenarios = await prisma.test_scenarios.findMany({
+      where: { agent_id: configId },
+      select: { id: true }
+      });
+
+      const scenarioIds = scenarios.map(s => s.id);
+
+      //! Delete test runs related to conversations
+      scenarioIds.forEach(async id =>{
+        console.log(`Deleting conversations for scenario ID: ${id}`);
+        const select_run_ids = prisma.test_conversations.findMany({
+          where: { scenario_id: id },
+          select: { run_id: true }
+        });
+        select_run_ids.then(async conversations => {
+          const runIds = conversations.map(c => c.run_id);
+          console.log(`Deleting test runs for scenario ID: ${id} with run IDs: ${runIds}`);
+          return prisma.test_runs.deleteMany({
+            where: { id: { in: runIds } }
+          });
+        }).catch(err => {
+          console.error(`Error deleting conversations for scenario ID ${id}:`, err);
+        }); 
+      })
+
+      //! delete the conversation messsages related to conversations
+      scenarioIds.forEach(async id =>{
+        console.log(`Deleting conversation messages for scenario ID: ${id}`);
+        const select_conversation_ids = prisma.test_conversations.findMany({
+          where: { scenario_id: id },
+          select: { id: true }
+        });
+        select_conversation_ids.then(conversations => {
+          const conversationIds = conversations.map(c => c.id);
+          console.log(`Deleting conversation messages for scenario ID: ${id} with conversation IDs: ${conversationIds}`);
+          return prisma.conversation_messages.deleteMany({
+            where: { conversation_id: { in: conversationIds } }
+          });
+        }).catch(err => {
+          console.error(`Error deleting conversation messages for scenario ID ${id}:`, err);
+        }); 
+      })  
+
+      
+
+      
+
+
+      await prisma.test_conversations.deleteMany({
+        where :{scenario_id : { in: scenarioIds }}
+      })
+
       // Step 1: Delete related test scenarios
       await prisma.test_scenarios.deleteMany({
         where: { agent_id: configId },
@@ -242,8 +302,36 @@ export class AgentConfigService {
       await prisma.agent_persona_mappings.deleteMany({
         where: { agent_id: configId },
       });
-  
-      // Step 3: Delete the agent config itself
+
+      // Step 4: Delete the agent description itself
+      await prisma.agent_descriptions.deleteMany({
+        where: { agent_id: configId },
+      });
+
+      // Step 5: Delete the agent headers itself
+      await prisma.agent_headers.deleteMany({
+        where: { agent_id: configId },
+      });
+
+      // Step 6: Delete the agent user descriptions itself
+      await prisma.agent_user_descriptions.deleteMany({
+        where: { agent_id: configId },
+      });
+
+      
+      // Step 8: Delete the agent outputs itself
+      await prisma.agent_outputs.deleteMany({
+        where: { agent_id: configId },
+      });
+
+       // Step 8: Delete the validation rules itself
+      await prisma.validation_rules.deleteMany({
+        where: { agent_id: configId },
+      });
+
+
+
+      // Step 9: Delete the agent config itself
       await prisma.agent_configs.delete({
         where: { id: configId },
       });

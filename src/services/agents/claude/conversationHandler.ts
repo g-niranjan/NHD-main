@@ -63,25 +63,28 @@ export class ConversationHandler {
     // Find the rule that identifies the chat content
     const chatRule = rules.find(rule => rule.condition === "chat");
     if (!chatRule) {
+       if (apiResponse && typeof apiResponse === 'string') {
+        return apiResponse;
+      }
       // Fallback to looking for common response fields
       if (apiResponse.response && typeof apiResponse.response.text === 'string') {
         return apiResponse.response.text;
       }
-      if (apiResponse.text && typeof apiResponse.text === 'string') {
+      else if (apiResponse.text && typeof apiResponse.text === 'string') {
         return apiResponse.text;
       }
-      if (apiResponse.content && typeof apiResponse.content === 'string') {
+      else if (apiResponse.content && typeof apiResponse.content === 'string') {
         return apiResponse.content;
       }
-      if (apiResponse.message && typeof apiResponse.message === 'string') {
-        return apiResponse.message;
-      }
-      
+     
       // If this is already a string, just return it
-      if (typeof apiResponse === 'string') {
+      else if (typeof apiResponse === 'string') {
         return apiResponse;
       }
       
+      else if (apiResponse ) {
+        return JSON.stringify(apiResponse);
+      }
       console.warn("Could not determine response field, returning empty string");
       return "";
     }
@@ -111,7 +114,9 @@ export class ConversationHandler {
     } catch (error) {
       // If path extraction fails, try fallback strategies
       console.warn(`Path extraction error: ${error}`);
-      
+       if (apiResponse) {
+        return JSON.stringify(apiResponse);
+      }
       // Try common response patterns
       if (apiResponse.response && typeof apiResponse.response.text === 'string') {
         return apiResponse.response.text;

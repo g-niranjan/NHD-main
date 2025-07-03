@@ -36,6 +36,10 @@ export const POST = withApiHandler(async (req: Request) => {
   const body = await req.json();
   const { results } = validateAnalyzeResultsRequest(body);
 
+  if (!results || (Array.isArray(results) && results.length === 0) || (typeof results === 'object' && Object.keys(results).length === 0)) {
+    throw new ValidationError('Invalid results format. Expected an array of test results.');
+  }
+  
   const modelConfig = ModelFactory.getSelectedModelConfig();
   if (!modelConfig) {
     throw new ConfigurationError('No LLM model configured. Please set up a model in settings.');

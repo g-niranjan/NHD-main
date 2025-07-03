@@ -9,7 +9,6 @@ import {
   DecisionSpeed, 
   SlangUsage 
 } from '@/types';
-import { Value } from '@radix-ui/react-select';
 
 // Persona validation schemas
 export const createPersonaSchema = z.object({

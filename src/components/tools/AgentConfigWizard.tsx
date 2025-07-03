@@ -13,9 +13,12 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { set } from 'zod';
 import { get } from 'http';
+import { v4 as uuidv4 } from 'uuid';
 
 import { useToast } from '@/hooks/use-toast';
 import AgentRules from './AgentRules';
+import { useAgentConfig } from "@/hooks/useAgentConfig"
+
 
 interface ConfigStep {
   id: string;
@@ -41,9 +44,10 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
     ],
     testMessage: 'Hello, how can you help me today?',
     requestBody: {
-      message: 'Hello, how can you help me today?'
+      question: 'Hello, how can you help me today?',
+      session_id: uuidv4() // Generate a unique session ID for each test
     },
-    messagePath: 'message',
+    messagePath: 'question',
     responsePath: ''
   });
 
@@ -56,6 +60,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
   const [showInputSelector, setShowInputSelector] = useState(false);
   const [requestBodyText, setRequestBodyText] = useState(JSON.stringify(config.requestBody, null, 2));
   const [rules, setRules] = useState<any[]>(config.rules || []); // Assuming rules is an array of objects
+  const { savedAgents, setSavedAgents } = useAgentConfig();
 
   // Update config when initialConfig changes (e.g., when loading an agent)
   useEffect(() => {
@@ -100,7 +105,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
 
     try {
       // Convert headers array to object
-      const headersObj = config.headers.reduce((acc, header) => {
+      const headersObj = config.headers.reduce((acc: Record<string, string>, header: { key: string; value: string }) => {
         if (header.key && header.value) {
           acc[header.key] = header.value;
         }
@@ -122,7 +127,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
       const result = await response.json();
 
       if (result.success) {
-      toast({ title: "Success", description: 'api calling success', duration : 20000 ,variant: "success" });
+        toast({ title: "Success", description: 'api calling success', duration: 5000, variant: "success" });
         setTestResult(result.data);
         // //!added by niranjan , loading the existing rules if available
         // try {
@@ -137,25 +142,22 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
         //   }
         //   const rulesData = await rulesResponse.json();
         //   setRules(rulesData.rules || []);
-        //   toast({ title: "Success", description: 'Retrived validation rules', duration : 20000 ,variant: "success" });
+        //   toast({ title: "Success", description: 'Retrived validation rules', duration : 5000 ,variant: "success" });
 
         // } catch (error) {
         //   console.error('Error fetching rules:', error);
-        //   toast({ title: "Error", description: 'Failed to fetch validation rules', duration : 20000 ,variant: "destructive" });
+        //   toast({ title: "Error", description: 'Failed to fetch validation rules', duration : 5000 ,variant: "destructive" });
         // }
-        setRules(config.rules || []);
-        toast({ title: "Success", description: 'Retrived validation rules', duration : 20000 ,variant: "success" });
+        if (config.rules && config.rules.length > 0) {
+          setRules(config.rules || []);
+          toast({ title: "Success", description: 'Retrived validation rules', duration: 5000, variant: "success" });
+        }
 
         //!added by niranjan to showoff the error message in UI 
-      } else if (result.error) {
-        //  toast({title:"Error",  description: result.error }); // Correct usage of toast.error
-        setTestResult(result.error);
-
       } else {
-        // Show error in UI
-        //  toast({title:"Error",  description: result.error }); // Correct usage of toast.error
-
-      }
+        toast({title: "Error", description: result.error, duration: 5000, variant: "destructive" });
+        throw new Error(result.error);
+      } 
     } catch (error) {
       console.error('Error testing agent:', error);
       // toast.error('Failed to test agent. Please check your configuration.');
@@ -199,7 +201,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
             setSelectedValue(displayPath);
             if (isInputSelection) {
               // setConfig({ ...config, messagePath: displayPath });
-              setConfig(config => (
+              setConfig((config: any) => (
                 { ...config, messagePath: displayPath, testMessage: getValueFromPath(config.requestBody, displayPath) }));
             }
           }}
@@ -229,7 +231,20 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                 id="name"
                 placeholder="My Customer Support Bot"
                 value={config.name}
-                onChange={(e) => setConfig({ ...config, name: e.target.value })}
+                onChange={(e) => {
+                  try {
+                    if (!savedAgents.some((val :any )=> val.name.toLowerCase() == e.target.value)){
+                    setConfig({ ...config, name: e.target.value })
+                    }
+                    else{
+                      toast({title: "Warning", description: `${e.target.value} already present in the system`, duration: 5000, variant: "warning" })
+                      setConfig({ ...config, name: e.target.value })
+                    }
+                  } catch (error) {
+                    toast({ title: "Error", description: 'Failed to set agent name', duration: 5000, variant: "destructive" });
+                  }
+
+                }}
                 className="mt-1"
               />
             </div>
@@ -275,7 +290,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   // Clear test result when endpoint changes
                   setTestResult(null);
                   setSelectedPath('');
-                  setConfig(prev => ({ ...prev, responsePath: '' }));
+                  setConfig((prev:any) => ({ ...prev, responsePath: '' }));
                 }}
                 className="mt-1"
               />
@@ -297,7 +312,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                 </Button>
               </div>
               <div className="space-y-2">
-                {config.headers.map((header, index) => (
+                {config.headers.map((header: { key: string; value: string }, index: number) => (
                   <div key={index} className="flex gap-2">
                     <Input
                       placeholder="Header name"
@@ -331,7 +346,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                         size="icon"
                         variant="ghost"
                         onClick={() => {
-                          const newHeaders = config.headers.filter((_, i) => i !== index);
+                          const newHeaders = config.headers.filter((_ : any, i : any) => i !== index);
                           setConfig({ ...config, headers: newHeaders });
                         }}
                       >
@@ -359,7 +374,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   try {
                     const parsed = JSON.parse(newText);
                     console.log('Parsed request body:', parsed);
-                    setConfig(prev => ({
+                    setConfig((prev: any) => ({
                       ...prev,
                       requestBody: parsed,
                       responsePath: '' // Reset response path when body changes
@@ -554,14 +569,14 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
             <div className="space-y-6 mt-6">
               <h3 className="font-medium mb-2">3. Configure Validation Rules</h3>
               <p className="text-sm text-muted-foreground mb-4">
-              Set rules to validate the input and output fields. These rules will be used to ensure your agent behaves as expected.
-              </p> 
+                Set rules to validate the input and output fields. These rules will be used to ensure your agent behaves as expected.
+              </p>
               <AgentRules
-                    manualResponse={testResult}
-                    rules={rules}
-                    setRules={setRules}
-                    agentId={config.agentId || ''}
-                  />    
+                manualResponse={testResult}
+                rules={rules}
+                setRules={setRules}
+                agentId={config.agentId || ''}
+              />
             </div>
           </div>
         );
@@ -605,7 +620,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                     const requestData: any = {
                       name: config.name,
                       endpoint: config.endpoint,
-                      headers: config.headers.reduce((acc, header) => {
+                      headers: config.headers.reduce((acc: Record<string, string>, header: { key: string; value: string }) => {
                         if (header.key && header.value) {
                           acc[header.key] = header.value;
                         }
@@ -638,7 +653,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                     }
 
                     const savedAgent = await response.json();
-                     toast({title:"Success",  description:config.id ? 'Agent configuration updated successfully!' : 'Agent configuration saved successfully!'  , duration: 2000, variant : "info" }); 
+                    toast({ title: "Success", description: config.id ? 'Agent configuration updated successfully!' : 'Agent configuration saved successfully!', duration: 2000, variant: "info" });
 
                     // Call the onComplete callback if provided
                     onComplete?.(savedAgent);

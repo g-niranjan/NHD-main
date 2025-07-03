@@ -18,7 +18,7 @@ export function useTestRuns() {
 
   const loadRuns = async (signal?: AbortSignal) => {
     await errorContext.withErrorHandling(async () => {
-      const res = await fetch('/api/tools/test-runs', { signal });
+      const res = await fetch('/api/tools/test-runs',);
       if (signal?.aborted) return;
       
       const response = await res.json();
@@ -55,7 +55,7 @@ export function useTestRuns() {
   };
 
   return {
-    runs,
+    runs,setRuns,
     selectedRun,
     setSelectedRun,
     addRun,

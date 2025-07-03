@@ -6,9 +6,12 @@ import {
   BookOpen,
   Users,
   PlayCircle,
+  FileJson,
+  Key,
   ChartBarStacked,
   LineChart,
-  BadgePlus
+  BadgePlus,
+  LayoutTemplate 
 } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
@@ -17,6 +20,11 @@ export default function Sidebar() {
   const { theme, setTheme } = useTheme()
   
   const navItems = [
+    {
+      label : 'Dashboard',
+      icon : LayoutTemplate ,
+      href : '/tools/dashboard'
+    },
     {
       label: 'Configuration',
       icon: Home,
@@ -32,11 +40,11 @@ export default function Sidebar() {
       icon: BookOpen,
       href: '/tools/test-cases'
     },
-    {
-      label: 'Agent Rules',
-      icon: ChartBarStacked,
-      href: '/tools/agent-rules'
-    },
+    // {
+    //   label: 'Agent Rules',
+    //   icon: ChartBarStacked,
+    //   href: '/tools/agent-rules'
+    // },
     {
       label: 'Test Runs',
       icon: PlayCircle,
@@ -45,14 +53,14 @@ export default function Sidebar() {
     //!added by niranjan
     {
       label: 'LLM Config',
-      icon: BadgePlus,
-      href: '/tools/agnet-config'
+      icon: Key,
+      href: '/tools/agnetconfigs'
     },
-    {
-      label: 'Metrics',
-      icon: LineChart,
-      href: '/tools/metrics'
-    }
+    // {
+    //   label: 'Metrics',
+    //   icon: LineChart,
+    //   href: '/tools/metrics'
+    // }
   ]
   
   return (

@@ -25,7 +25,6 @@ export const POST = withApiHandler(async (request: Request) => {
   
   const validation = safeValidateRequest(agentConfigSchema, body);
   if (!validation.success) {
-    console.error('Validation failed:', validation.error.format());
     throw new ValidationError(validation.error.errors.map(e => e.message).join(', '));
   }
   

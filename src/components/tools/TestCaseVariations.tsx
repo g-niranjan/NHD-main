@@ -147,8 +147,6 @@ export function TestCaseVariations({
     const existsInServer = cachedVariationData &&
       cachedVariationData.testCases.some((tc) => tc.id === editingId);
 
-      console.log("Saving test case:", editedTestCase);
-
     const payload: TestVariation = {
       id: existsInServer ? editingId : crypto.randomUUID(),
       testId: selectedTestId,

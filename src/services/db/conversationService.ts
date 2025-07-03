@@ -15,14 +15,14 @@ export class ConversationService {
           const formattedMetrics = message.metrics || {};
           
           // Log for debugging
-          console.log(`Saving ${message.role} message to database: ${message.id.substring(0, 8)}...`);
-          console.log('Full message data:', {
-            id: message.id,
-            conversationId: message.conversationId,
-            role: message.role,
-            contentLength: message.content?.length,
-            timestamp: message.timestamp
-          });
+          // console.log(`Saving ${message.role} message to database: ${message.id.substring(0, 8)}...`);
+          // console.log('Full message data:', {
+          //   id: message.id,
+          //   conversationId: message.conversationId,
+          //   role: message.role,
+          //   contentLength: message.content?.length,
+          //   timestamp: message.timestamp
+          // });
           
           return await prisma.conversation_messages.create({
             data: {
@@ -66,7 +66,7 @@ export class ConversationService {
                     status: data.status
                 }
             });
-            console.log("++++++++++++ conversationid:" + conversation.id);
+            // console.log("++++++++++++ conversationid:" + conversation.id);
             return conversation.id;
         } catch (error) {
         console.error("Error creating test conversation:", error);

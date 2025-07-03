@@ -6,16 +6,18 @@ export class ApiHandler {
       signal?: AbortSignal
     ): Promise<any> {
       try {
+        setTimeout(() => {}, 3000);
+        // console.log('Calling endpoint:', endpointUrl, 'with headers:', headers, 'and input:', input);
         const response = await fetch(endpointUrl, {
           method: 'POST',
           headers: headers,
-          body: JSON.stringify(input),
-          signal
+          body: JSON.stringify(input)
         });
-  
-        if (!response.ok) {
-          throw new Error(`Endpoint returned ${response.status}`);
-        }
+        setTimeout(() => {}, 3000);
+
+        // console.log('response ::::::::::::::::::::::::::::::: ', response);
+        
+       
   
         return await response.json();
       } catch (error) {

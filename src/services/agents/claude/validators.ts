@@ -60,10 +60,6 @@ export class ResponseValidator {
         if (typeof response.content === 'string') {
           return response.content.includes(chatRule.value);
         }
-        //!added by niranjan
-         if (typeof response.content === 'object') {
-          return response.content.includes(chatRule.value);
-        }
         
         // If we can't extract text in any way, return true to avoid false failures
         console.warn("Could not extract text for condition validation, assuming valid");

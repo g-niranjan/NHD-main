@@ -58,7 +58,7 @@ export default function ConversationView({ chat }: ConversationViewProps) {
                       Message {userMessageCount}
                     </span>
                   </div>
-                  <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900">
+                  <Card className="bg-red-500 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900">
                     <div className="p-4">
                       <CollapsibleJson content={message.content} />
                     </div>

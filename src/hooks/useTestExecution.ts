@@ -4,11 +4,12 @@ import { useTestRuns } from './useTestRuns';
 import { ModelFactory } from '@/services/llm/modelfactory';
 import { useErrorContext } from './useErrorContext';
 import ApiClient from '@/lib/api-client';
+import { TestRun } from '@/types/runs';
 
 export type TestExecutionStatus = 'idle' | 'connecting' | 'running' | 'completed' | 'failed';
 
 export function useTestExecution() {
-  const { runs, addRun, updateRun, selectedRun, setSelectedRun } = useTestRuns();
+  const { runs,setRuns, addRun, updateRun, selectedRun, setSelectedRun } = useTestRuns();
   const errorContext = useErrorContext();
   
   const [status, setStatus] = useState<TestExecutionStatus>('idle');
@@ -58,21 +59,40 @@ export function useTestExecution() {
         
         // Update status to running
         setStatus('running');
+        setRuns(prev => {
+          // Create a new run object
+          const newRun = {
+            id: testId,
+            name: `Test Run for ${testId}`,
+            timestamp: new Date().toISOString(),
+            status: 'running' as const,
+            metrics: {
+              total: 0,
+              passed: 0,
+              failed: 0,
+              skipped: 0,
+              responseTime: 0,
+              messages: []
+            },
+            chats : [] 
+          } 
+          // Add the new run to the list
+          return [newRun, ...prev];
+        });
+
+
         
         // Execute the test run
-        console.log(`Executing test run for test ID: ${testId}`);
-        console.log('Using headers:', headers);
-
         const response = await ApiClient.post('/api/tools/test-runs', { testId }, { headers });
         const completedRun = response.data || response;
-
-        console.log('Test run completed:', response);
+        console.log('Test run completed:', completedRun);
         
         // Update status to completed
         setStatus('completed');
         
         // Update the test runs list
-        addRun(completedRun);
+        // addRun(completedRun);
+        updateRun(completedRun);
         
         return completedRun;
       });

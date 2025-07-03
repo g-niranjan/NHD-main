@@ -40,17 +40,20 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
   const errorContext = useErrorContext();
   
   // New model form state
+  const [activeTab, setActiveTab] = useState<"models" | "add-new">("models"); // <-- Add this line
+
   const [provider, setProvider] = useState<LLMProvider>(LLMProvider.Anthropic);
   const [modelId, setModelId] = useState<string>("");
   const [keyName, setKeyName] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
   const [orgId, setOrgId] = useState<string>("");
 
-    const { toast } = useToast();
-  
+  const { toast } = useToast();
+
   useEffect(() => {
     // Load saved configurations
     const { configs, selectedModelId } = ModelFactory.getUserModelConfigs();
+    
     setConfigs(configs);
     setSelectedModelId(selectedModelId);
     
@@ -58,6 +61,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
     if (PROVIDER_MODELS[provider]?.length > 0) {
       setModelId(PROVIDER_MODELS[provider][0]);
     }
+   
   }, [provider]);
 
   const handleSaveConfig = () => {
@@ -87,9 +91,10 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
         localStorage.setItem("selected_model_id", newConfig.id);
         setSelectedModelId(newConfig.id);
       }
-      toast({title:"Success",  description: newConfig.name +` added `  , duration: 20000, variant : "success" }); 
+      toast({ title: "Success", description: newConfig.name
+        ? `${newConfig.name} updated`
+        : `${newConfig.name} added`, duration: 20000, variant: "success" });
       setConfigs(updatedConfigs);
-
       resetForm();
     } catch (error) {
       errorContext.handleError(error);
@@ -100,11 +105,27 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
     try {
       localStorage.setItem("selected_model_id", modelId);
       setSelectedModelId(modelId);
-      toast({title:"Success",  description: `Model ${modelId} selected` , duration: 20000, variant : "success" });
+      toast({ title: "Success", description: `Model ${modelId} selected`, duration: 20000, variant: "success" });
     } catch (error) {
       errorContext.handleError(error);
     }
   };
+
+ 
+
+  const handleEditConfig = (id: string) => {
+    const config = configs.find(c => c.id === id);
+    console.log('id: ', id);
+    console.log('config: ', config);
+    if (!config) return;
+
+    setProvider(config.provider);
+    setModelId(config.id);
+    setKeyName(config.keyName);
+    setApiKey(config.apiKey);
+    setOrgId(config.extraParams?.organization || "");
+    setActiveTab("add-new"); // <-- Switch to Add New tab
+  }
   
   const handleDeleteConfig = (id: string) => {
     try {
@@ -119,7 +140,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
         localStorage.removeItem("selected_model_id");
         setSelectedModelId("");
       }
-      toast({title:"Success",  description: id +` deleted `  , duration: 20000, variant : "success" }); 
+      toast({ title: "Success", description: id + ` deleted `, duration: 20000, variant: "success" });
       setConfigs(updatedConfigs);
     } catch (error) {
       errorContext.handleError(error);
@@ -137,8 +158,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
       <DialogContent className="sm:max-w-[600px] border-border">
         <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle>LLM API Configuration</DialogTitle>
-          <DialogClose className="absolute right-4 top-4"/>
-
+          <DialogClose className="absolute right-4 top-4" />
         </DialogHeader>
         
         {errorContext.error && (
@@ -149,7 +169,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
           />
         )}
         
-        <Tabs defaultValue="models">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="models">Your Models</TabsTrigger>
             <TabsTrigger value="add-new">Add New Model</TabsTrigger>
@@ -192,6 +212,19 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
+
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => handleEditConfig(config.id)}
+                        >
+                          {/* Lucide Edit icon for clarity */}
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 1 1 3.182 3.182l-12.07 12.07a2 2 0 0 1-.878.513l-4 1a.5.5 0 0 1-.606-.606l1-4a2 2 0 0 1 .513-.878l12.07-12.07z" />
+                          </svg>
+                        </Button>
+
+
                       </div>
                     </div>
                   ))}
@@ -274,7 +307,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
                 className="w-full mt-4"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Model
+                Add/Edit Model
               </Button>
             </div>
           </TabsContent>

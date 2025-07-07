@@ -307,6 +307,86 @@ async updateTestRun(testRun: TestRun) {
       throw new Error("Failed to update test conversation status");
     }
   }
+
+    async getUniqueTestRuns(): Promise<TestRun[]> {
+    try {
+      const runs = await prisma.$queryRaw`SELECT DISTINCT ON (name) * FROM test_runs ORDER BY name, created_at DESC;`;
+
+      return runs.map(run => ({
+        id: run.id,
+        name: run.name,
+        timestamp: run.created_at ? run.created_at.toISOString() : new Date().toISOString(),
+        status: run.status as 'pending' | 'running' | 'completed' | 'failed',
+          total: run.total_tests ?? 0,
+          passed: run.passed_tests ?? 0,
+          failed: run.failed_tests ?? 0,
+        // metrics: {
+        //   total: run.total_tests ?? 0,
+        //   passed: run.passed_tests ?? 0,
+        //   failed: run.failed_tests ?? 0,
+        //   chats: run.test_conversations.length,
+        //   correct: 0,
+        //   incorrect: 0,
+        //   sentimentScores: { positive: 0, neutral: 0, negative: 0 }
+        // },
+        // chats: run.test_conversations.map(tc => {
+        //   const conversation = tc as ExtendedTestConversation;
+        //   return {
+        //     id: conversation.id,
+        //     name: `${tc.test_scenarios?.name || ""} - ${getPersonaName(tc.persona_id || "")}`,
+        //     scenarioName: tc.test_scenarios?.name,
+        //     personaName: getPersonaName(tc.persona_id || ""),
+        //     scenario: conversation.scenario_id,
+        //     status: conversation.status as 'running' | 'passed' | 'failed',
+        //     messages: (conversation.conversation_messages || []).map(msg => {
+        //       // Build metrics object from both individual fields and JSON metrics
+        //       const metrics: any = {
+        //         responseTime: msg.response_time ?? 0
+        //       };
+              
+        //       // If there's a metrics JSON object, merge it in
+        //       if (msg.metrics && typeof msg.metrics === 'object') {
+        //         Object.assign(metrics, msg.metrics);
+        //       }
+              
+        //       return {
+        //         id: msg.id,
+        //         chatId: msg.conversation_id,
+        //         role: msg.role as "user" | "assistant",
+        //         content: msg.content,
+        //         expectedOutput: undefined,
+        //         // isCorrect removed - validation is at conversation level
+        //         explanation: undefined,
+        //         metrics: metrics
+        //       };
+        //     }),
+        //     metrics: {
+        //       correct: 0,
+        //       incorrect: 0,
+        //       responseTime: conversation.conversation_messages
+        //       .filter(msg => msg.role === 'assistant')
+        //       .map(msg => msg.response_time ?? 0),
+        //       validationScores: [],
+        //       contextRelevance: [],
+        //       metricResults: []
+        //     },
+        //     timestamp: conversation.created_at ? conversation.created_at.toISOString() : new Date().toISOString(),
+        //     personaId: tc.persona_id || "",
+        //     validationResult: {
+        //       isCorrect: conversation.is_correct ?? false,
+        //       explanation: conversation.validation_reason ?? ""
+        //     }
+        //   };
+        // }),     
+        // results: [],
+        agentId: run.agent_id,
+      }));
+    } catch (error) {
+      console.error("Database error in getTestRuns:", error);
+      throw new Error("Failed to fetch test runs");
+    }
+  }
+
   
 }
 

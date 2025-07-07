@@ -715,7 +715,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
             Previous
           </Button>
           {currentStep < steps.length - 1 && (
-            <Button
+            <Button className="flex justify-between mt-8 pt-6 border-t"
               onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
               disabled={
                 (currentStep === 0 && (!config.name || !config.description)) ||

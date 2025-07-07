@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import Loader from "@/app/loading";
 
 function SkeletonLoader() {
   return (
@@ -138,10 +139,10 @@ export default function TestCasesPage() {
               Create test scenarios and map personas to your AI agents
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {/* <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <kbd className="bg-muted px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
             <span>Search</span>
-          </div>
+          </div> */}
         </div>
         
         {/* Workflow Steps */}
@@ -215,7 +216,8 @@ export default function TestCasesPage() {
               </CardHeader>
               <CardContent className="overflow-y-auto max-h-[calc(100vh-20rem)] px-3">
                 {loading ? (
-                  <SkeletonLoader />
+                  // <SkeletonLoader />
+                  <Loader/>
                 ) : filteredAgentCases.length > 0 ? (
                   <div className="space-y-3">
                     {filteredAgentCases.map((test) => (

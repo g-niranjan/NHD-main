@@ -23,7 +23,7 @@ export default function Sidebar() {
     {
       label : 'Dashboard',
       icon : LayoutTemplate ,
-      href : '/tools/dashboard'
+      href : '/tools/dahsboard'
     },
     {
       label: 'Configuration',

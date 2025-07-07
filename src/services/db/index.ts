@@ -42,6 +42,7 @@ export const dbService = {
   getAllTestRuns: testRunService.getAllTestRuns.bind(testRunService),
   updateTestRun: testRunService.updateTestRun.bind(testRunService),
   updateTestConversationStatus: testRunService.updateTestConversationStatus.bind(testRunService),
+  getUniqueTestRuns : testRunService.getUniqueTestRuns.bind(testRunService),
  
   
   // Metrics
@@ -57,4 +58,5 @@ saveConversationMessage: conversationService.saveConversationMessage.bind(conver
 getConversationMessages: conversationService.getConversationMessages.bind(conversationService),
 reconstructMemoryFromDb: conversationService.reconstructMemoryFromDb.bind(conversationService),
 createTestConversation: conversationService.createTestConversation.bind(conversationService),
+getTestConversions : conversationService.getTestConversions.bind(conversationService),
 };

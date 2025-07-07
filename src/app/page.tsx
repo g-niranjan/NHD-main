@@ -7,7 +7,7 @@ export default function RootPage() {
   const router = useRouter();
   
   useEffect(() => {
-    router.push('/tools');
+    router.push('/tools/dahsboard');
   }, [router]);
   
   return (

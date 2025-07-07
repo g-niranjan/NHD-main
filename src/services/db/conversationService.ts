@@ -135,7 +135,7 @@ export class ConversationService {
         FROM public.test_conversations tc
         LEFT JOIN personas pr ON pr.id = tc.persona_id
         WHERE tc.run_id = ANY($1::uuid[])
-        GROUP BY tc.run_id, tc.persona_id, pr.name;
+        GROUP BY tc.persona_id, pr.name;
         `,
         runIds
       );

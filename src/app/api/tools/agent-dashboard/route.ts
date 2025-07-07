@@ -35,7 +35,7 @@ export const GET = withApiHandler(async (request: Request) => {
     console.error("No agent configurations found");
     // throw new NotFoundError('No agent configurations found');
   }
-  console.log("Total agent configurations:", configs);
+
   overview.agentCount = configs.length;
   // getting the personas count
   const personas = await dbService.getPersonas();
@@ -43,7 +43,6 @@ export const GET = withApiHandler(async (request: Request) => {
     console.error("No personas found");
     // throw new NotFoundError('No personas found');
   }
-  console.log("Total personas:", personas);
   overview.personaCount = personas.length;
   // getting the test cases count
   const testcases = await dbService.getUniqueTestRuns();
@@ -68,19 +67,9 @@ export const GET = withApiHandler(async (request: Request) => {
   overview.passed = metrics.passed;
   overview.failed = metrics.failed;
 
-  console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& :",testcases);
+  const uniqueTestRuns  =  testcases.map((val)=>val.id);
 
-  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>", overview);
-
-    const testconversion   = await dbService.getTestConversions(['4b4421de-eda1-4c15-b6f8-97adf07c5800',
-  '9061a477-f232-48b8-bb12-9628e994b38b']);
-console.log(testconversion);
-  // barGraphData = testcases.reduce((ERun, NRun)=>{
-  //   ERun.name = NRun.name || "";
-  //   ERun.passed = 
-
-  //   return ERun
-  // },{name :'',passed : 0, failed :0 }) 
+  const testconversion   = await dbService.getTestConversions(uniqueTestRuns);
 
   barGraphData = testcases.map((test : any)=>{
     return {
@@ -89,38 +78,10 @@ console.log(testconversion);
       failed : test.failed
     }
   })
-  dashbaordParams.overview = overview;
+  dashbaordParams.overview = overview;  
   dashbaordParams.barGraphData = barGraphData;
-  // dashbaordParams.pieChartData = [
-  //     { personaName: 'Friendly user', passed: 10, failed: 6 },
-  //     { personaName: 'Confused user', passed: 1, failed: 6 },
-  //     { personaName: 'Technical expert', passed: 9, failed: 6 },
-  //   ]
   dashbaordParams.pieChartData = testconversion
+  
 
   return dashbaordParams
-  //   {
-  //   pieChartData: [
-  //     { personaName: 'Friendly user', passed: 10, failed: 6 },
-  //     { personaName: 'Confused user', passed: 1, failed: 6 },
-  //     { personaName: 'Technical expert', passed: 9, failed: 6 },
-  //   ],
-  //   overview: {
-  //     agentCount: 15,
-  //     personaCount: 3,
-  //     testCases: 100,
-  //     passed: 60,
-  //     failed: 40,
-  //   },
-  //   barGraphData: [
-  //     { agentName: 'Agent A', passed: 45, failed: 5 },
-  //     { agentName: 'Agent B', passed: 32, failed: 8 },
-  //     { agentName: 'Agent C', passed: 27, failed: 13 },
-  //     { agentName: 'Agent D', passed: 50, failed: 2 },
-  //     { agentName: 'Agent E', passed: 20, failed: 20 },
-  //     { agentName: 'Agent F', passed: 35, failed: 5 },
-  //     { agentName: 'Agent G', passed: 38, failed: 7 },
-  //     { agentName: 'Agent H', passed: 41, failed: 4 },
-  //   ]
-  // };
 });

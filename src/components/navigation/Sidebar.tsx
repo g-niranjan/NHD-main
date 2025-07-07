@@ -23,12 +23,12 @@ export default function Sidebar() {
     {
       label : 'Dashboard',
       icon : LayoutTemplate ,
-      href : '/tools/dahsboard'
+      href : '/tools'
     },
     {
       label: 'Configuration',
       icon: Home,
-      href: '/tools'
+      href: '/tools/dashboard'
     },
     // {
     //   label: 'Personas',

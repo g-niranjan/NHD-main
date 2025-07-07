@@ -63,7 +63,7 @@ export function useTestExecution() {
           // Create a new run object
           const newRun = {
             id: testId,
-            name: `Test Run for ${testId}`,
+            name: `${testId}`,
             timestamp: new Date().toISOString(),
             status: 'running' as const,
             metrics: {
@@ -91,8 +91,8 @@ export function useTestExecution() {
         setStatus('completed');
         
         // Update the test runs list
-        // addRun(completedRun);
-        updateRun(completedRun);
+         addRun(completedRun);
+        //updateRun(completedRun);
         
         return completedRun;
       });

@@ -102,7 +102,7 @@ export function TestCaseVariations({
         body: JSON.stringify({ testId: selectedTestId }),
       });
       //!addd by niranjan
-      console.log("Generate test cases response:", response);
+      //console.log("Generate test cases response:", response);
       if (!response.ok && response.status === 403) {
         setShowApiKeyWarning(true);
         return;

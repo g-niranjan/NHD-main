@@ -15,15 +15,11 @@ import { set } from "zod"
 import { v4 as uuidv4 } from "uuid"
 
 import { useToast } from "@/hooks/use-toast"
-import ConfirmModal from "@/components/common/ConfirmModel"
-
 
 export default function ToolsPage() {
   const { savedAgents, loadAgent, saveTest,setSavedAgents } = useAgentConfig()
   const { error, clearError } = useErrorContext()
   const [currentConfig, setCurrentConfig] = useState<any>(null)
-  const [isModalOpen, setModalOpen] = useState(false);
-
 
   const handleWizardComplete = async (config: any) => {
     console.log('Wizard completed with config:', config)
@@ -85,8 +81,6 @@ export default function ToolsPage() {
   //!added by niranjan
    const handleDeleteAgent  = async (agentid : string) =>{
     try {
-        setModalOpen(false);
-
       const res = await fetch(`/api/tools/agent-config`,{
         method : 'DELETE',
         headers:{
@@ -179,14 +173,12 @@ export default function ToolsPage() {
                   savedAgents.map((agent) => (
                     <DropdownMenuItem
                       key={agent.id}
-                    //   onClick={() => handleDeleteAgent(agent.id)}
-                    onClick={()=>setModalOpen(true)}
+                      onClick={() => handleDeleteAgent(agent.id)}
                       className="flex items-center gap-2 cursor-pointer"
                     >
                       <FileCode className="h-4 w-4 text-primary/70" />
                       {agent.name}
                     </DropdownMenuItem>
-                    
                   ))
                 ) : (
                   <DropdownMenuItem disabled className="text-muted-foreground/70">

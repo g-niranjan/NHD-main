@@ -16,6 +16,16 @@ import {
 } from 'recharts';
 
 import Loader from "@/app/loading";
+import Image from 'next/image';
+import personaImg from '@/public/audience.png';
+import passedImg from '@/public/check.png';
+import failedImg from '@/public/cross.png';
+import testcasesImg from '@/public/bugs.png';
+import agentImg from '@/public/agent.png';
+import noDataImg from '@/public/no-data.png';
+import communityImg from '@/public/community.png';
+import statisticsImg from '@/public/statistics.png';
+
 const personaColors = ['#2bbba6', '#cdaff4', '#f8bf8d', '#92a1ee', '#b0a1b0'];
 
 const outerColors = {
@@ -58,35 +68,28 @@ interface DashboardData {
 
 // No Data Found SVG (matches screenshot style)
 const NoDataFound = () => (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <svg width="300" height="300" viewBox="0 0 120 120" fill="none">
-        <g>
-            <rect x="35" y="30" width="50" height="60" rx="8" fill="#f6fafd" stroke="#dbe6ef" strokeWidth="2"/>
-            <rect x="35" y="60" width="50" height="10" rx="5" fill="#e0e7ef"/>
-            <rect x="35" y="75" width="30" height="7" rx="3.5" fill="#e0e7ef"/>
-            <circle cx="55" cy="52" r="3" fill="#b0b8c1"/>
-            <circle cx="75" cy="52" r="3" fill="#b0b8c1"/>
-            <path d="M60 65 Q65 72 70 65" stroke="#b0b8c1" strokeWidth="2" fill="none"/>
-            <rect x="55" y="38" width="10" height="4" rx="2" fill="#e0e7ef"/>
-            <rect x="48" y="34" width="4" height="4" rx="2" fill="#e0e7ef"/>
-            <rect x="78" y="34" width="4" height="4" rx="2" fill="#e0e7ef"/>
-            <rect x="35" y="95" width="50" height="2" rx="1" fill="#e0e7ef"/>
-            <g>
-            <path d="M40 30 l5 -10" stroke="#b0b8c1" strokeWidth="2" strokeLinecap="round"/>
-            <path d="M45 30 l2 -7" stroke="#b0b8c1" strokeWidth="2" strokeLinecap="round"/>
-            </g>
-            <g>
-            <circle cx="90" cy="60" r="7" fill="#f6fafd" stroke="#dbe6ef" strokeWidth="2"/>
-            <rect x="92" y="60" width="6" height="2" rx="1" fill="#b0b8c1" transform="rotate(45 92 60)"/>
-            </g>
-            <g>
-            <rect x="35" y="90" width="50" height="2" rx="1" fill="#e0e7ef"/>
-            <rect x="30" y="100" width="60" height="2" rx="1" fill="#e0e7ef"/>
-            </g>
-        </g>
-        </svg>
-        <div style={{ color: '#b0b8c1', fontSize: 20, marginTop: 12 }}>No Data Found!</div>
-     </div>
+    <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: 400,
+        opacity: 0.7
+    }}>
+        <Image 
+            src={noDataImg} 
+            alt="Bar Chart" 
+            width={200} 
+            height={200} 
+            style={{ 
+                opacity: 0.5, 
+                background: 'transparent', 
+                pointerEvents: 'none',
+                marginBottom: 16
+            }} 
+        />
+        <span style={{ color: '#888', fontSize: 22, fontWeight: 500 }}>No Data Found</span>
+    </div>
 );
 
 export default function DashboardCharts() {
@@ -104,7 +107,7 @@ export default function DashboardCharts() {
         fetch('/api/tools/agent-dashboard')
             .then(res => res.json())
             .then(data => {
-                console.log('%%%%%%%%%%%%%%%%%%%%%%%%',data)
+                
                 setDashboardData(data.data);
                 setLoading(false);
             })
@@ -154,23 +157,7 @@ export default function DashboardCharts() {
                     {/* Agent Count */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
                         {/* Custom robot agent icon */}
-                        <svg width="60" height="60" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="24" cy="24" r="24" fill="#F4F8FB" />
-                            <ellipse cx="24" cy="28" rx="14" ry="10" fill="#E6ECF5" />
-                            <circle cx="24" cy="20" r="10" fill="#fff" stroke="#1A365D" strokeWidth="2" />
-                            <rect x="18" y="34" width="12" height="4" rx="2" fill="#1A365D" />
-                            <rect x="12" y="24" width="4" height="8" rx="2" fill="#1A365D" />
-                            <rect x="32" y="24" width="4" height="8" rx="2" fill="#1A365D" />
-                            <circle cx="20" cy="20" r="2.5" fill="#1A365D" />
-                            <circle cx="28" cy="20" r="2.5" fill="#1A365D" />
-                            <rect x="22" y="24" width="4" height="2" rx="1" fill="#1A365D" />
-                            <rect x="21" y="10" width="6" height="4" rx="2" fill="#1A365D" />
-                            <rect x="16" y="8" width="4" height="4" rx="2" fill="#1A365D" />
-                            <rect x="28" y="8" width="4" height="4" rx="2" fill="#1A365D" />
-                            <rect x="19" y="38" width="10" height="2" rx="1" fill="#B3C6E0" />
-                            <rect x="10" y="32" width="4" height="2" rx="1" fill="#B3C6E0" />
-                            <rect x="34" y="32" width="4" height="2" rx="1" fill="#B3C6E0" />
-                        </svg>
+                       <Image src={agentImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.agentCount}</div>
                             <div style={{ fontSize: 18, color: '#888', marginTop: 2 }}>Agents</div>
@@ -178,7 +165,8 @@ export default function DashboardCharts() {
                     </div>
                     {/* Persona Count */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
-                        <svg width="60" height="60" fill="none" viewBox="0 0 24 24"><rect width="24" height="24" rx="12" fill="#ede7f6" /><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3Zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5s-3 1.34-3 3 1.34 3 3 3Zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13Zm8 0c-.29 0-.62.02-.97.05C16.64 13.36 19 14.28 19 15.5V19h5v-2.5c0-2.33-4.67-3.5-7-3.5Z" fill="#7e57c2" /></svg>
+                        <Image src={personaImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
+                    
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.personaCount}</div>
                             <div style={{ fontSize: 18, color: '#888', marginTop: 2 }}>Personas</div>
@@ -186,7 +174,8 @@ export default function DashboardCharts() {
                     </div>
                     {/* Test Cases */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
-                        <svg width="60" height="60" fill="none" viewBox="0 0 24 24"><rect width="24" height="24" rx="12" fill="#fff3e0" /><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2Zm0 16H5V5h14v14Zm-7-3h2v2h-2v-2Zm0-8h2v6h-2V8Z" fill="#ff9800" /></svg>
+                        <Image src={testcasesImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
+                        
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.testCases}</div>
                             <div style={{ fontSize: 18, color: '#888', marginTop: 2 }}>Test Cases</div>
@@ -194,7 +183,8 @@ export default function DashboardCharts() {
                     </div>
                     {/* Passed */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
-                        <svg width="60" height="60" fill="none" viewBox="0 0 24 24"><rect width="24" height="24" rx="12" fill="#e8f5e9" /><path d="M9 16.2l-3.5-3.5 1.41-1.41L9 13.38l7.09-7.09 1.41 1.41L9 16.2Z" fill="#43a047" /></svg>
+                        <Image src={passedImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
+                        
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.passed}</div>
                             <div style={{ fontSize: 18, color: '#888', marginTop: 2 }}>Passed</div>
@@ -202,7 +192,7 @@ export default function DashboardCharts() {
                     </div>
                     {/* Failed */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
-                        <svg width="60" height="60" fill="none" viewBox="0 0 24 24"><rect width="24" height="24" rx="12" fill="#ffebee" /><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2Zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59Z" fill="#e53935" /></svg>
+                        <Image src={failedImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.failed}</div>
                             <div style={{ fontSize: 18, color: '#888', marginTop: 2 }}>Failed</div>
@@ -233,18 +223,12 @@ export default function DashboardCharts() {
                     }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ marginRight: 8 }}>
-                            <rect x="3" y="11" width="4" height="8" rx="1" fill="#4CAF50" />
-                            <rect x="10" y="7" width="4" height="12" rx="1" fill="#2196F3" />
-                            <rect x="17" y="4" width="4" height="15" rx="1" fill="#FFC107" />
-                        </svg>
+                        <Image src={statisticsImg} alt="Bar Chart" width={35} height={35} style={{ marginRight: 8 }} />
                         <span style={{ fontWeight: 600, fontSize: 18 }}>Agent-wise Test Results</span>
                     </div>
 
-                    {barGraphData.length === 0 ? (
-                        
-                              <NoDataFound />  
-                        
+                    {barGraphData.length === 0 ? (                        
+                        <NoDataFound />                          
                     ) : (
                         <ResponsiveContainer width="100%" height="90%">
                             <BarChart data={barGraphData} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
@@ -259,7 +243,7 @@ export default function DashboardCharts() {
                                     </linearGradient>
                                 </defs>
                                 <XAxis dataKey="agentName" />
-                                <YAxis />
+                                <YAxis allowDecimals={false} />
                                 <Tooltip contentStyle={tooltipStyle} />
                                 <Legend />
                                 <Bar
@@ -267,12 +251,14 @@ export default function DashboardCharts() {
                                     name="Passed Test Cases"
                                     fill="url(#passGradient)"
                                     activeBar={<Rectangle fill="#c9fab3" stroke="#388E3C" />}
+                                    label={{ position: 'top', fill: '#357b16', fontWeight: 600 }}
                                 />
                                 <Bar
                                     dataKey="failed"
                                     name="Failed Test Cases"
                                     fill="url(#failGradient)"
                                     activeBar={<Rectangle fill="#eb9180" stroke="#e65100" />}
+                                    label={{ position: 'top', fill: '#fc6443', fontWeight: 600 }}
                                 />
                             </BarChart>
                         </ResponsiveContainer>
@@ -289,16 +275,13 @@ export default function DashboardCharts() {
                     }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ marginRight: 8 }}>
-                            <circle cx="12" cy="12" r="10" fill="#afecf4" />
-                            <path d="M12 2 a10 10 0 0 1 0 20 a10 10 0 0 1 0 -20" fill="#cdaff4" />
-                            <path d="M12 2 a10 10 0 0 1 8.66 5" fill="#f8bf8d" />
-                        </svg>
+                       <Image src={communityImg} alt="Bar Chart" width={35} height={35} style={{ marginRight: 8 }} />
+                        
                         <span style={{ fontWeight: 600, fontSize: 18 }}>Persona-wise Test Distribution</span>
                     </div>
 
                     {innerData.length === 0 ? (
-                        <NoDataFound />
+                        <NoDataFound /> 
                     ) : (
                         <ResponsiveContainer width="100%" height="90%">
                             <PieChart>

@@ -1,4 +1,4 @@
-# GenAI Test Suite
+<!-- # GenAI Test Suite
 
 <div align="center">
   <br />
@@ -91,7 +91,7 @@ Define custom validation rules using:
 - JSON path expressions for response parsing
 - Conditional logic (equals, contains, regex matching)
 - Criticality levels for rule prioritization
-- Custom metric definitions
+- Custom metric definitions -->
 
 ## 🚀 Quick Start
 
@@ -105,7 +105,7 @@ Define custom validation rules using:
 
 ```bash
 # Clone the repository
-git clone https://github.com/AgentEvaluation/GenAI Test Suite.git
+git clone <repo url>
 cd GenAI Test Suite
 
 # Install dependencies

@@ -112,7 +112,7 @@ export default function ToolsPage() {
    }
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-background to-background/80 p-6">
+    <div className="relative    bg-gradient-to-b from-background to-background/80 p-6">
       {error && (
         <ErrorDisplay
           error={error}

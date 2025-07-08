@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:Mahavir$2021@localhost:5432/nothotdog"
+  url      = "postgresql://postgres:Admin@2025@localhost:5432/nothotdog"
 }
 
 model agent_configs {

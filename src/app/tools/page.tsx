@@ -16,15 +16,6 @@ import {
 } from 'recharts';
 
 import Loader from "@/app/loading";
-import Image from 'next/image';
-import personaImg from '@/public/audience.png';
-import passedImg from '@/public/check.png';
-import failedImg from '@/public/cross.png';
-import testcasesImg from '@/public/bugs.png';
-import agentImg from '@/public/agent.png';
-import noDataImg from '@/public/no-data.png';
-import communityImg from '@/public/community.png';
-import statisticsImg from '@/public/statistics.png';
 
 const personaColors = ['#2bbba6', '#cdaff4', '#f8bf8d', '#92a1ee', '#b0a1b0'];
 
@@ -76,8 +67,7 @@ const NoDataFound = () => (
         height: 400,
         opacity: 0.7
     }}>
-        <Image 
-            src={noDataImg} 
+        <img src='./no-data.png'
             alt="Bar Chart" 
             width={200} 
             height={200} 
@@ -157,7 +147,7 @@ export default function DashboardCharts() {
                     {/* Agent Count */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
                         {/* Custom robot agent icon */}
-                       <Image src={agentImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
+                       <img src='./agent.png' alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.agentCount}</div>
                             <div style={{ fontSize: 18, color: '#888', marginTop: 2 }}>Agents</div>
@@ -165,7 +155,7 @@ export default function DashboardCharts() {
                     </div>
                     {/* Persona Count */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
-                        <Image src={personaImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
+                        <img src='./audience.png' alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
                     
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.personaCount}</div>
@@ -174,7 +164,7 @@ export default function DashboardCharts() {
                     </div>
                     {/* Test Cases */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
-                        <Image src={testcasesImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
+                        <img src='./bugs.png' alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
                         
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.testCases}</div>
@@ -183,7 +173,7 @@ export default function DashboardCharts() {
                     </div>
                     {/* Passed */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
-                        <Image src={passedImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
+                        <img src='./check.png' alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
                         
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.passed}</div>
@@ -192,7 +182,7 @@ export default function DashboardCharts() {
                     </div>
                     {/* Failed */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 18, minWidth: 170 }}>
-                        <Image src={failedImg} alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
+                        <img src='./cross.png' alt="Bar Chart" width={70} height={70} style={{ marginRight: 8 }} />
                         <div>
                             <div style={{ fontWeight: 800, fontSize: 32 }}>{overview.failed}</div>
                             <div style={{ fontSize: 18, color: '#888', marginTop: 2 }}>Failed</div>
@@ -223,7 +213,7 @@ export default function DashboardCharts() {
                     }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                        <Image src={statisticsImg} alt="Bar Chart" width={35} height={35} style={{ marginRight: 8 }} />
+                        <img src='./statistics.png' alt="Bar Chart" width={35} height={35} style={{ marginRight: 8 }} />
                         <span style={{ fontWeight: 600, fontSize: 18 }}>Agent-wise Test Results</span>
                     </div>
 
@@ -275,7 +265,7 @@ export default function DashboardCharts() {
                     }}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                       <Image src={communityImg} alt="Bar Chart" width={35} height={35} style={{ marginRight: 8 }} />
+                       <img src='./community.png' alt="Bar Chart" width={35} height={35} style={{ marginRight: 8 }} />
                         
                         <span style={{ fontWeight: 600, fontSize: 18 }}>Persona-wise Test Distribution</span>
                     </div>

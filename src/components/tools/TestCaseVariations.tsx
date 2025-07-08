@@ -22,6 +22,7 @@ import {
 import ErrorDisplay from "@/components/common/ErrorDisplay";
 import { useErrorContext } from "@/hooks/useErrorContext";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 interface EditingState {
   scenario: string;
@@ -45,6 +46,7 @@ export function TestCaseVariations({
   
   // Add ref to track if data has been loaded for a test already
   const loadedTestId = useRef<string | null>(null);
+  const {toast} = useToast();
   
   const { 
     variationData, 
@@ -112,7 +114,7 @@ export function TestCaseVariations({
         const data = await response.json();
         throw new Error(data.error || "Failed to generate test cases");
       }
-      
+        toast({ title: "Success", description: 'Generating test cases success', duration: 5000, variant: "success" });
       const result = await response.json();
       const data = result.data;
       setGeneratedCases(data.testCases);
@@ -132,6 +134,8 @@ export function TestCaseVariations({
     setGeneratedCases([newCase, ...generatedCases]);
     setEditingId(newCase.id);
     setEditingState({ scenario: "", expectedOutput: "" });
+     toast({ title: "Success", description: 'Test Case added', duration: 5000, variant: "success" });
+
   };
 
   const saveEdit = async () => {
@@ -201,6 +205,13 @@ export function TestCaseVariations({
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ scenarioIds: idsToDelete, testId: selectedTestId }),
+      }).then((data)=>{
+        toast({ title: "Success", description: 'Delete testcase success', duration: 5000, variant: "success" });
+        console.log("senario delete success message : , ",data);
+      }).catch((error)=>{
+        console.log("senario delete success message : , ",error);
+        toast({ title: "Failure", description: 'Delete testcase success', duration: 5000, variant: "destructive" });
+
       });
 
       // Update local state after successful deletion

@@ -23,6 +23,8 @@ export default function ToolsPage() {
   const { error, clearError } = useErrorContext()
   const [currentConfig, setCurrentConfig] = useState<any>(null)
   const [isModalOpen, setModalOpen] = useState(false);
+  const [agentToDelete, setAgentToDelete] = useState(null);
+
 
 
   const handleWizardComplete = async (config: any) => {
@@ -179,8 +181,8 @@ export default function ToolsPage() {
                   savedAgents.map((agent) => (
                     <DropdownMenuItem
                       key={agent.id}
-                    //   onClick={() => handleDeleteAgent(agent.id)}
-                    onClick={()=>setModalOpen(true)}
+                      onClick={() => handleDeleteAgent(agent.id)}
+                      //onClick={()=>setAgentToDelete(agent)}
                       className="flex items-center gap-2 cursor-pointer"
                     >
                       <FileCode className="h-4 w-4 text-primary/70" />
@@ -197,6 +199,16 @@ export default function ToolsPage() {
             </DropdownMenu>
           </div>
         </div>
+        <ConfirmModal
+        open = {!!agentToDelete}
+        title = "Delete agent"
+        description={`Are you sure you want to delete agent "${agentToDelete?.name}"? This action cannot be undone.`}
+        onConfirm={ async()=>{
+          await handleDeleteAgent(agentToDelete.id);
+          setAgentToDelete(null);
+        }}
+        onCancel={()=> setAgentToDelete(null)}
+        />
         <AgentConfigWizard 
           onComplete={handleWizardComplete}
           initialConfig={currentConfig}

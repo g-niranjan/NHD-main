@@ -269,25 +269,20 @@ export class AgentConfigService {
       //! delete the conversation messsages related to conversations
       scenarioIds.forEach(async id =>{
         console.log(`Deleting conversation messages for scenario ID: ${id}`);
-        const select_conversation_ids = prisma.test_conversations.findMany({
+        const select_conversation_ids = await prisma.test_conversations.findMany({
           where: { scenario_id: id },
           select: { id: true }
         });
-        select_conversation_ids.then(conversations => {
-          const conversationIds = conversations.map(c => c.id);
+        try {
+          const conversationIds = select_conversation_ids.map(c => c.id);
           console.log(`Deleting conversation messages for scenario ID: ${id} with conversation IDs: ${conversationIds}`);
-          return prisma.conversation_messages.deleteMany({
+          await prisma.conversation_messages.deleteMany({
             where: { conversation_id: { in: conversationIds } }
           });
-        }).catch(err => {
+        } catch (err) {
           console.error(`Error deleting conversation messages for scenario ID ${id}:`, err);
-        }); 
+        }
       })  
-
-      
-
-      
-
 
       await prisma.test_conversations.deleteMany({
         where :{scenario_id : { in: scenarioIds }}

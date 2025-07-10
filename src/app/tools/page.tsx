@@ -76,8 +76,7 @@ const NoDataFound = () => (
         height: 400,
         opacity: 0.7
     }}>
-        <Image 
-            src={noDataImg} 
+        <img src='./no-data.png'
             alt="Bar Chart" 
             width={200} 
             height={200} 

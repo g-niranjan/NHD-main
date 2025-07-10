@@ -26,8 +26,7 @@ import { ModelFactory } from "@/services/llm/modelfactory";
 import { Plus, Trash2 } from "lucide-react";
 import { useErrorContext } from "@/hooks/useErrorContext";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
-import { useToast } from '@/hooks/use-toast';
-
+import { config } from "zod/v4/core";
 
 interface ApiKeyConfigProps {
   isOpen: boolean;
@@ -66,7 +65,6 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
 
   const handleSaveConfig = () => {
     try {
-      // Validate form
       if (!modelId || !apiKey || !keyName) {
         errorContext.showWarning("Please fill in all required fields");
         return;
@@ -80,11 +78,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
         extraParams: provider === LLMProvider.OpenAI && orgId ? { organization: orgId } : {}
       };
       const updatedConfigs = [...configs, newConfig];
-      
-      // Save to localStorage
       localStorage.setItem("model_configs", JSON.stringify(updatedConfigs));
-      
-      // If this is the first config, set it as selected
       if (updatedConfigs.length === 1 || !selectedModelId) {
         localStorage.setItem("selected_model_id", newConfig.id);
         setSelectedModelId(newConfig.id);
@@ -228,7 +222,8 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
                           <Button 
                             size="sm" 
                             variant="outline"
-                            onClick={() => handleSelectModel(config.id)}
+                            onClick={() => handleSelectModel(config.id)
+                            }
                           >
                             Use
                           </Button>

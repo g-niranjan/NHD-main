@@ -27,6 +27,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useErrorContext } from "@/hooks/useErrorContext";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
 import { config } from "zod/v4/core";
+import { useToast } from "@/hooks/use-toast";
 
 interface ApiKeyConfigProps {
   isOpen: boolean;

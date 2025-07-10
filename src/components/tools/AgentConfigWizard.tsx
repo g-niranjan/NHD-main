@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertCircle, ChevronRight, CheckCircle2, Code2, Send, Zap, Plus, X } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast'; 
 import { useAgentConfig } from '@/hooks/useAgentConfig';
 
 interface ConfigStep {
@@ -25,7 +25,6 @@ interface AgentConfigWizardProps {
 
 export default function AgentConfigWizard({ onComplete, initialConfig }: AgentConfigWizardProps = {}) {
   const [currentStep, setCurrentStep] = useState(0);
-  const { savedAgents } = useAgentConfig()
   const [config, setConfig] = useState(initialConfig || {
     name: '',
     description: '',
@@ -51,6 +50,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
   const [requestBodyText, setRequestBodyText] = useState(JSON.stringify(config.requestBody, null, 2));
   const [rules, setRules] = useState<any[]>(config.rules || []); // Assuming rules is an array of objects
   const { savedAgents, setSavedAgents } = useAgentConfig();
+  const {toast} = useToast();
 // Check if agent name exists in savedAgents (case-insensitive, exclude current id)
   const nameExists = !!config.name && savedAgents?.some(
     (agent: any) =>
@@ -124,11 +124,10 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
         setTestResult(result.data);
       } else {
         // Show error in UI
-        toast.error(`Error: ${result.error}`);
+        throw new Error("test result Erro:")
       }
     } catch (error) {
       console.error('Error testing agent:', error);
-      toast.error('Failed to test agent. Please check your configuration.');
     } finally {
       setIsLoading(false);
     }
@@ -393,7 +392,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                     </div>
                   </div>
                 </div>
-              )} */}
+              )} 
 
               {testResult && (
                 <div className="space-y-4">
@@ -455,7 +454,8 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                     variant="outline"
                     onClick={() => {
                       setConfig({ ...config, messagePath: selectedInputPath });
-                      toast.success('Input path set successfully');
+                    toast({ title: "Success", description: 'Input path set successfully', duration: 2000, variant: "info" });
+
                     }}
                     className="ml-auto"
                   >
@@ -618,13 +618,13 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                     }
 
                     const savedAgent = await response.json();
-                    toast.success(config.id ? 'Agent configuration updated successfully!' : 'Agent configuration saved successfully!');
+                    toast({ title: "Success", description: 'Agent configuration updated successfully!', duration: 2000, variant: "info" });
+                    
                     
                     // Call the onComplete callback if provided
                     onComplete?.(savedAgent);
                   } catch (error) {
                     console.error('Error saving agent configuration:', error);
-                    toast.error('Failed to save agent configuration');
                   }
                 }}
               >

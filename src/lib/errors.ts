@@ -1,5 +1,5 @@
 /**
- * @file Centralized error handling utilities for the GenAI Test Suite platform
+ * @file Centralized error handling utilities for the Winograd platform
  */
 
 /**

@@ -55,7 +55,7 @@ export default function RootLayout({
               </div>
 
               <footer className="flex justify-center items-center px-4 py-2 border-t border-border bg-card text-sm text-muted-foreground">
-                <span>© {new Date().getFullYear() || '2025'} GenAI Test Suite. All rights reserved.</span>
+                <span>© {new Date().getFullYear() || '2025'} Winograd. All rights reserved.</span>
               </footer>
             </ErrorProvider>
           </ErrorBoundary>

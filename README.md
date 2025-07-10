@@ -1,8 +1,8 @@
-# GenAI Test Suite
+# Winograd
 
 <div align="center">
   <br />
-  <h1>🤖 GenAI Test Suite</h1>
+  <h1>🤖 Winograd</h1>
   <h3>AI Agent Testing & Evaluation Platform</h3>
   <br />
   <p align="center">
@@ -11,7 +11,7 @@
     <img src="https://img.shields.io/badge/Next.js-15-black?logo=next.js&logoColor=white" alt="Next.js">
     <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white" alt="React">
     <img src="https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql&logoColor=white" alt="PostgreSQL">
-    <img src="https://img.shields.io/github/stars/AgentEvaluation/GenAI Test Suite?style=social" alt="GitHub stars">
+    <img src="https://img.shields.io/github/stars/AgentEvaluation/Winograd?style=social" alt="GitHub stars">
   </p>
   <p align="center">
     <a href="#-overview">Overview</a> •
@@ -27,7 +27,7 @@
 
 ## 📋 Overview
 
-GenAI Test Suite is an open-source platform for testing and evaluating AI agents. Built for developers who need quality assurance for their conversational AI systems, GenAI Test Suite provides automated testing, hallucination detection, and performance monitoring.
+Winograd is an open-source platform for testing and evaluating AI agents. Built for developers who need quality assurance for their conversational AI systems, Winograd provides automated testing, hallucination detection, and performance monitoring.
 
 ## 🎁 Editions
 
@@ -57,12 +57,12 @@ For teams needing advanced features, collaboration, and scale.
 - 🎯 Priority support & SLAs
 - 🔄 CI/CD integrations
 
-[**Get Enterprise Access →**](mailto:enterprise@GenAI Test Suite.ai)
+[**Get Enterprise Access →**](mailto:enterprise@Winograd.ai)
 
 ## ✨ Key Features (Community Edition)
 
 ### 🧪 Automated Test Generation
-Generate test variations automatically using AI. Define a simple example, and GenAI Test Suite creates diverse test cases covering different phrasings and scenarios.
+Generate test variations automatically using AI. Define a simple example, and Winograd creates diverse test cases covering different phrasings and scenarios.
 
 ### 🎭 Built-in Test Personas
 Test with 3 pre-configured personas:
@@ -106,7 +106,7 @@ Define custom validation rules using:
 ```bash
 # Clone the repository
 git clone <repo url>
-cd GenAI Test Suite
+cd Winograd
 
 # Install dependencies
 npm install
@@ -123,7 +123,7 @@ cp .env.example .env.local
 
 ```env
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/GenAI Test Suite"
+DATABASE_URL="postgresql://user:password@localhost:5432/Winograd"
 
 # Authentication (Clerk)
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
@@ -426,8 +426,8 @@ We welcome contributions from the community! Please see our [Contributing Guide]
 
 ```bash
 # Fork and clone the repository
-git clone https://github.com/yourusername/GenAI Test Suite.git
-cd GenAI Test Suite
+git clone https://github.com/yourusername/Winograd.git
+cd Winograd
 
 # Create a feature branch
 git checkout -b feature/your-feature-name
@@ -463,8 +463,8 @@ Built with excellent open-source technologies:
 
 <div align="center">
   <p>
-    <a href="https://github.com/AgentEvaluation/GenAI Test Suite/issues">Report Bug</a> •
-    <a href="https://github.com/AgentEvaluation/GenAI Test Suite/discussions">Discussions</a> •
-    <a href="https://github.com/AgentEvaluation/GenAI Test Suite/wiki">Documentation</a>
+    <a href="https://github.com/AgentEvaluation/Winograd/issues">Report Bug</a> •
+    <a href="https://github.com/AgentEvaluation/Winograd/discussions">Discussions</a> •
+    <a href="https://github.com/AgentEvaluation/Winograd/wiki">Documentation</a>
   </p>
 </div>

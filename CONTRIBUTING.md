@@ -1,6 +1,6 @@
-# Contributing to GenAI Test Suite
+# Contributing to Winograd
 
-Thank you for your interest in contributing to GenAI Test Suite. Your contributions are essential to the success of this project. This document outlines the guidelines and procedures for contributing effectively.
+Thank you for your interest in contributing to Winograd. Your contributions are essential to the success of this project. This document outlines the guidelines and procedures for contributing effectively.
 
 ## Table of Contents
 - [Getting Started](#getting-started)
@@ -13,10 +13,10 @@ Thank you for your interest in contributing to GenAI Test Suite. Your contributi
 - [Acknowledgements](#acknowledgements)
 
 ## Getting Started
-To begin, please review the [README.md](https://github.com/vedhsaka/GenAI Test Suite/blob/main/README.md) file for an overview of the project, its objectives, and instructions for setting up the development environment.
+To begin, please review the [README.md](https://github.com/vedhsaka/Winograd/blob/main/README.md) file for an overview of the project, its objectives, and instructions for setting up the development environment.
 
 ## Code of Conduct
-All contributors are expected to adhere to our [Code of Conduct](https://github.com/vedhsaka/GenAI Test Suite/blob/main/CODE_OF_CONDUCT.md). Please familiarize yourself with its contents prior to engaging with the project.
+All contributors are expected to adhere to our [Code of Conduct](https://github.com/vedhsaka/Winograd/blob/main/CODE_OF_CONDUCT.md). Please familiarize yourself with its contents prior to engaging with the project.
 
 ## How to Contribute
 
@@ -50,4 +50,4 @@ We appreciate all contributions made to this project. Significant contributions 
 
 ---
 
-We look forward to your contributions and thank you for your commitment to enhancing GenAI Test Suite.
+We look forward to your contributions and thank you for your commitment to enhancing Winograd.

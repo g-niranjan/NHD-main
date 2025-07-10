@@ -47,7 +47,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
   const [keyName, setKeyName] = useState<string>("");
   const [apiKey, setApiKey] = useState<string>("");
   const [orgId, setOrgId] = useState<string>("");
-
+  const [editId, setEditId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -71,7 +71,6 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
         errorContext.showWarning("Please fill in all required fields");
         return;
       }
-
       const newConfig: LLMServiceConfig = {
         id: modelId,
         provider,
@@ -80,7 +79,6 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
         keyName,
         extraParams: provider === LLMProvider.OpenAI && orgId ? { organization: orgId } : {}
       };
-      
       const updatedConfigs = [...configs, newConfig];
       
       // Save to localStorage
@@ -93,7 +91,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
       }
       toast({ title: "Success", description: newConfig.name
         ? `${newConfig.name} updated`
-        : `${newConfig.name} added`, duration: 20000, variant: "success" });
+        : `${newConfig.name} added`, duration: 5000, variant: "success" });
       setConfigs(updatedConfigs);
       resetForm();
     } catch (error) {
@@ -105,28 +103,58 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
     try {
       localStorage.setItem("selected_model_id", modelId);
       setSelectedModelId(modelId);
-      toast({ title: "Success", description: `Model ${modelId} selected`, duration: 20000, variant: "success" });
+      toast({ title: "Success", description: `Model ${modelId} selected`, duration: 5000, variant: "success" });
     } catch (error) {
       errorContext.handleError(error);
     }
   };
 
- 
+  const handleUpdateConfig = () => {  
+    try {
+      // Validate form
+      if (!modelId || !apiKey || !keyName) {
+        return;
+      }
 
-  const handleEditConfig = (id: string) => {
-    const config = configs.find(c => c.id === id);
-    console.log('id: ', id);
-    console.log('config: ', config);
-    if (!config) return;
+      const updatedConfig: LLMServiceConfig = {
+        id: editId || modelId,
+        provider,
+        name: MODEL_CONFIGS[modelId].name,
+        apiKey,
+        keyName,
+        extraParams: provider === LLMProvider.OpenAI && orgId ? { organization: orgId } : {}
+      };
 
-    setProvider(config.provider);
-    setModelId(config.id);
-    setKeyName(config.keyName);
-    setApiKey(config.apiKey);
-    setOrgId(config.extraParams?.organization || "");
-    setActiveTab("add-new"); // <-- Switch to Add New tab
+      const configIndex = configs.findIndex(c => c.id === updatedConfig.id);
+      if (configIndex === -1) {
+        return;
+      }
+      const updatedConfigs = [...configs];
+      updatedConfigs[configIndex] = updatedConfig;
+      localStorage.setItem("model_configs", JSON.stringify(updatedConfigs));
+      setConfigs(updatedConfigs);
+      resetForm();
+      setEditId(null); 
+    } catch (error) {
+      errorContext.handleError(error);
+    }
   }
-  
+ const handleEditConfig = (id: string) => {
+  try {
+    const config = configs.find(c => c.id === id);
+    if(!config) {
+      return ;
+    }
+    setActiveTab("add-new");
+    setModelId(config.id);
+    setProvider(config.provider);
+    setApiKey(config.apiKey);
+    setKeyName(config.keyName);
+    setEditId(config.id); // Set editId when editing
+  } catch (error) {
+  }
+};
+
   const handleDeleteConfig = (id: string) => {
     try {
       const updatedConfigs = configs.filter(c => c.id !== id);
@@ -140,7 +168,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
         localStorage.removeItem("selected_model_id");
         setSelectedModelId("");
       }
-      toast({ title: "Success", description: id + ` deleted `, duration: 20000, variant: "success" });
+      toast({ title: "Success", description: id + ` deleted `, duration: 5000, variant: "success" });
       setConfigs(updatedConfigs);
     } catch (error) {
       errorContext.handleError(error);
@@ -169,7 +197,7 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
           />
         )}
         
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={value => setActiveTab(value as "models" | "add-new")}>
           <TabsList>
             <TabsTrigger value="models">Your Models</TabsTrigger>
             <TabsTrigger value="add-new">Add New Model</TabsTrigger>
@@ -301,14 +329,26 @@ export default function ApiKeyConfig({ isOpen, setIsOpen }: ApiKeyConfigProps) {
                 </div>
               )}
               
-              <Button 
-                onClick={handleSaveConfig}
+              <Button
+                onClick={editId ? handleUpdateConfig : handleSaveConfig}
                 disabled={!modelId || !apiKey || !keyName || errorContext.isLoading}
                 className="w-full mt-4"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Add/Edit Model
+                {editId ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 1 1 3.182 3.182l-12.07 12.07a2 2 0 0 1-.878.513l-4 1a.5.5 0 0 1-.606-.606l1-4a2 2 0 0 1 .513-.878l12.07-12.07z" />
+                    </svg>
+                    Edit Model
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Model
+                  </>
+                )}
               </Button>
+              
             </div>
           </TabsContent>
         </Tabs>

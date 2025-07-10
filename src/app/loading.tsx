@@ -3,7 +3,7 @@ export default function Loader() {
     <div className="flex items-center justify-center h-screen bg-blue-100 ">
       <div className="relative w-24 h-24">
         {/* Rotating gradient ring */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 via-yellow-500 to-orange-500 animate-spin" />
+        <div className="absolute inset-1 rounded-full bg-gradient-to-r from-blue-900 via-yellow-700 to-orange-500 animate-ping" />
 
         {/* Cutout inner circle (to simulate ring) */}
         <div className="absolute inset-2 bg-white rounded-full z-10"></div>

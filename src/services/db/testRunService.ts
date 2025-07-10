@@ -1,18 +1,42 @@
-import { prisma } from '@/lib/prisma';
-import { TestRun } from '@/types/runs';
+import { prisma } from "@/lib/prisma";
+import { TestRun } from "@/types/runs";
 import { ExtendedTestConversation } from "@/types/extendedTestConversation";
 
 // Hardcoded persona mapping
 const PERSONA_MAP: Record<string, { name: string; description?: string }> = {
-  '11111111-1111-1111-1111-111111111111': { name: 'Friendly User', description: 'A typical friendly user asking questions politely' },
-  '22222222-2222-2222-2222-222222222222': { name: 'Technical Expert', description: 'A technically savvy user with detailed questions' },
-  '33333333-3333-3333-3333-333333333333': { name: 'Confused User', description: 'A user who needs extra help and clarification' },
+  "11111111-1111-1111-1111-111111111111": {
+    name: "Friendly User",
+    description: "A typical friendly user asking questions politely",
+  },
+  "22222222-2222-2222-2222-222222222222": {
+    name: "Technical Expert",
+    description: "A technically savvy user with detailed questions",
+  },
+  "33333333-3333-3333-3333-333333333333": {
+    name: "Confused User",
+    description: "A user who needs extra help and clarification",
+  },
   // Legacy mappings for backward compatibility
-  'curious-customer': { name: 'Curious Customer', description: 'Asks detailed questions about products' },
-  'skeptical-buyer': { name: 'Skeptical Buyer', description: 'Questions claims and needs proof' },
-  'tech-savvy': { name: 'Tech Savvy User', description: 'Understands technical details' },
-  'budget-conscious': { name: 'Budget Conscious', description: 'Focused on price and value' },
-  'first-time-user': { name: 'First Time User', description: 'New to the product/service' },
+  "curious-customer": {
+    name: "Curious Customer",
+    description: "Asks detailed questions about products",
+  },
+  "skeptical-buyer": {
+    name: "Skeptical Buyer",
+    description: "Questions claims and needs proof",
+  },
+  "tech-savvy": {
+    name: "Tech Savvy User",
+    description: "Understands technical details",
+  },
+  "budget-conscious": {
+    name: "Budget Conscious",
+    description: "Focused on price and value",
+  },
+  "first-time-user": {
+    name: "First Time User",
+    description: "New to the product/service",
+  },
 };
 
 function getPersonaName(personaId: string): string {
@@ -20,32 +44,37 @@ function getPersonaName(personaId: string): string {
 }
 
 export class TestRunService {
-  async getAllTestRuns(limit: number = 20, offset: number = 0): Promise<{ runs: TestRun[], total: number }> {
+  async getAllTestRuns(
+    limit: number = 20,
+    offset: number = 0
+  ): Promise<{ runs: TestRun[]; total: number }> {
     try {
       // Get total count for pagination
       const total = await prisma.test_runs.count();
-      
+
       const runs = await prisma.test_runs.findMany({
         include: {
           test_conversations: {
             include: {
               conversation_messages: {
-                orderBy: { message_order: 'asc' }
+                orderBy: { message_order: "asc" },
               },
-              test_scenarios: true
+              test_scenarios: true,
             },
           },
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { created_at: "desc" },
         take: limit,
-        skip: offset
+        skip: offset,
       });
 
-      return runs.map(run => ({
+      return runs.map((run) => ({
         id: run.id,
         name: run.name,
-        timestamp: run.created_at ? run.created_at.toISOString() : new Date().toISOString(),
-        status: run.status as 'pending' | 'running' | 'completed' | 'failed',
+        timestamp: run.created_at
+          ? run.created_at.toISOString()
+          : new Date().toISOString(),
+        status: run.status as "pending" | "running" | "completed" | "failed",
         metrics: {
           total: run.total_tests ?? 0,
           passed: run.passed_tests ?? 0,
@@ -53,28 +82,30 @@ export class TestRunService {
           chats: run.test_conversations.length,
           correct: 0,
           incorrect: 0,
-          sentimentScores: { positive: 0, neutral: 0, negative: 0 }
+          sentimentScores: { positive: 0, neutral: 0, negative: 0 },
         },
-        chats: run.test_conversations.map(tc => {
+        chats: run.test_conversations.map((tc) => {
           const conversation = tc as ExtendedTestConversation;
           return {
             id: conversation.id,
-            name: `${tc.test_scenarios?.name || ""} - ${getPersonaName(tc.persona_id || "")}`,
+            name: `${tc.test_scenarios?.name || ""} - ${getPersonaName(
+              tc.persona_id || ""
+            )}`,
             scenarioName: tc.test_scenarios?.name,
             personaName: getPersonaName(tc.persona_id || ""),
             scenario: conversation.scenario_id,
-            status: conversation.status as 'running' | 'passed' | 'failed',
-            messages: (conversation.conversation_messages || []).map(msg => {
+            status: conversation.status as "running" | "passed" | "failed",
+            messages: (conversation.conversation_messages || []).map((msg) => {
               // Build metrics object from both individual fields and JSON metrics
               const metrics: any = {
-                responseTime: msg.response_time ?? 0
+                responseTime: msg.response_time ?? 0,
               };
-              
+
               // If there's a metrics JSON object, merge it in
-              if (msg.metrics && typeof msg.metrics === 'object') {
+              if (msg.metrics && typeof msg.metrics === "object") {
                 Object.assign(metrics, msg.metrics);
               }
-              
+
               return {
                 id: msg.id,
                 chatId: msg.conversation_id,
@@ -83,31 +114,33 @@ export class TestRunService {
                 expectedOutput: undefined,
                 // isCorrect removed - validation is at conversation level
                 explanation: undefined,
-                metrics: metrics
+                metrics: metrics,
               };
             }),
             metrics: {
               correct: 0,
               incorrect: 0,
               responseTime: conversation.conversation_messages
-              .filter(msg => msg.role === 'assistant')
-              .map(msg => msg.response_time ?? 0),
+                .filter((msg) => msg.role === "assistant")
+                .map((msg) => msg.response_time ?? 0),
               validationScores: [],
               contextRelevance: [],
-              metricResults: []
+              metricResults: [],
             },
-            timestamp: conversation.created_at ? conversation.created_at.toISOString() : new Date().toISOString(),
+            timestamp: conversation.created_at
+              ? conversation.created_at.toISOString()
+              : new Date().toISOString(),
             personaId: tc.persona_id || "",
             validationResult: {
               isCorrect: conversation.is_correct ?? false,
-              explanation: conversation.validation_reason ?? ""
-            }
+              explanation: conversation.validation_reason ?? "",
+            },
           };
-        }),     
+        }),
         results: [],
         agentId: run.agent_id,
       }));
-      
+
       return { runs: mappedRuns, total };
     } catch (error) {
       console.error("Database error in getAllTestRuns:", error);
@@ -128,7 +161,7 @@ export class TestRunService {
             total_tests: run.metrics.total,
             passed_tests: run.metrics.passed,
             failed_tests: run.metrics.failed,
-          }
+          },
         });
 
         // Create test conversations and messages in the transaction
@@ -141,22 +174,26 @@ export class TestRunService {
               persona_id: chat.personaId || "",
               status: chat.status,
               error_message: chat.error || null,
-              validation_reason: chat.validationResult ? chat.validationResult.explanation : null,
-              is_correct: chat.validationResult ? chat.validationResult.isCorrect : undefined,
-            }
+              validation_reason: chat.validationResult
+                ? chat.validationResult.explanation
+                : null,
+              is_correct: chat.validationResult
+                ? chat.validationResult.isCorrect
+                : undefined,
+            },
           });
 
           // Create messages for this conversation
           await tx.conversation_messages.createMany({
-            data: chat.messages.map(msg => ({
+            data: chat.messages.map((msg) => ({
               id: msg.id,
               conversation_id: chat.id,
               role: msg.role,
               content: msg.content,
               response_time: msg.metrics?.responseTime || 0,
-              metrics: msg.metrics || {}
+              metrics: msg.metrics || {},
               // message_order will be auto-generated by database
-            }))
+            })),
           });
         }
 
@@ -167,7 +204,7 @@ export class TestRunService {
       }
     });
   }
-  
+
   async getTestRuns(): Promise<TestRun[]> {
     try {
       const runs = await prisma.test_runs.findMany({
@@ -175,20 +212,22 @@ export class TestRunService {
           test_conversations: {
             include: {
               conversation_messages: {
-                orderBy: { message_order: 'asc' }
+                orderBy: { message_order: "asc" },
               },
-              test_scenarios: true
+              test_scenarios: true,
             },
           },
         },
-        orderBy: { created_at: 'desc' },
+        orderBy: { created_at: "desc" },
       });
 
-      return runs.map(run => ({
+      return runs.map((run) => ({
         id: run.id,
         name: run.name,
-        timestamp: run.created_at ? run.created_at.toISOString() : new Date().toISOString(),
-        status: run.status as 'pending' | 'running' | 'completed' | 'failed',
+        timestamp: run.created_at
+          ? run.created_at.toISOString()
+          : new Date().toISOString(),
+        status: run.status as "pending" | "running" | "completed" | "failed",
         metrics: {
           total: run.total_tests ?? 0,
           passed: run.passed_tests ?? 0,
@@ -196,28 +235,30 @@ export class TestRunService {
           chats: run.test_conversations.length,
           correct: 0,
           incorrect: 0,
-          sentimentScores: { positive: 0, neutral: 0, negative: 0 }
+          sentimentScores: { positive: 0, neutral: 0, negative: 0 },
         },
-        chats: run.test_conversations.map(tc => {
+        chats: run.test_conversations.map((tc) => {
           const conversation = tc as ExtendedTestConversation;
           return {
             id: conversation.id,
-            name: `${tc.test_scenarios?.name || ""} - ${getPersonaName(tc.persona_id || "")}`,
+            name: `${tc.test_scenarios?.name || ""} - ${getPersonaName(
+              tc.persona_id || ""
+            )}`,
             scenarioName: tc.test_scenarios?.name,
             personaName: getPersonaName(tc.persona_id || ""),
             scenario: conversation.scenario_id,
-            status: conversation.status as 'running' | 'passed' | 'failed',
-            messages: (conversation.conversation_messages || []).map(msg => {
+            status: conversation.status as "running" | "passed" | "failed",
+            messages: (conversation.conversation_messages || []).map((msg) => {
               // Build metrics object from both individual fields and JSON metrics
               const metrics: any = {
-                responseTime: msg.response_time ?? 0
+                responseTime: msg.response_time ?? 0,
               };
-              
+
               // If there's a metrics JSON object, merge it in
-              if (msg.metrics && typeof msg.metrics === 'object') {
+              if (msg.metrics && typeof msg.metrics === "object") {
                 Object.assign(metrics, msg.metrics);
               }
-              
+
               return {
                 id: msg.id,
                 chatId: msg.conversation_id,
@@ -226,27 +267,29 @@ export class TestRunService {
                 expectedOutput: undefined,
                 // isCorrect removed - validation is at conversation level
                 explanation: undefined,
-                metrics: metrics
+                metrics: metrics,
               };
             }),
             metrics: {
               correct: 0,
               incorrect: 0,
               responseTime: conversation.conversation_messages
-              .filter(msg => msg.role === 'assistant')
-              .map(msg => msg.response_time ?? 0),
+                .filter((msg) => msg.role === "assistant")
+                .map((msg) => msg.response_time ?? 0),
               validationScores: [],
               contextRelevance: [],
-              metricResults: []
+              metricResults: [],
             },
-            timestamp: conversation.created_at ? conversation.created_at.toISOString() : new Date().toISOString(),
+            timestamp: conversation.created_at
+              ? conversation.created_at.toISOString()
+              : new Date().toISOString(),
             personaId: tc.persona_id || "",
             validationResult: {
               isCorrect: conversation.is_correct ?? false,
-              explanation: conversation.validation_reason ?? ""
-            }
+              explanation: conversation.validation_reason ?? "",
+            },
           };
-        }),     
+        }),
         results: [],
         agentId: run.agent_id,
       }));
@@ -255,13 +298,12 @@ export class TestRunService {
       throw new Error("Failed to fetch test runs");
     }
   }
-  
 
   // Removed saveMetricResults - test_run_metrics table no longer exists
   // Metric results should be stored elsewhere or in the conversation messages
 
   // In src-services-db-testRunService.ts
-async updateTestRun(testRun: TestRun) {
+  async updateTestRun(testRun: TestRun) {
     try {
       return await prisma.test_runs.update({
         where: { id: testRun.id },
@@ -269,38 +311,38 @@ async updateTestRun(testRun: TestRun) {
           status: testRun.status,
           passed_tests: testRun.metrics.passed,
           failed_tests: testRun.metrics.failed,
-          total_tests: testRun.metrics.total
-        }
+          total_tests: testRun.metrics.total,
+        },
       });
     } catch (error) {
       console.error("Database error in updateTestRun:", error);
       throw new Error("Failed to update test run");
     }
   }
-  
+
   async updateTestConversationStatus(
-    conversationId: string, 
-    status: string, 
+    conversationId: string,
+    status: string,
     errorMessage?: string,
     validationResult?: { isCorrect: boolean; explanation: string }
   ) {
     try {
       const updateData: any = {
-        status: status
+        status: status,
       };
-      
+
       if (errorMessage) {
         updateData.error_message = errorMessage;
       }
-      
+
       if (validationResult) {
         updateData.is_correct = validationResult.isCorrect;
         updateData.validation_reason = validationResult.explanation;
       }
-      
+
       return await prisma.test_conversations.update({
         where: { id: conversationId },
-        data: updateData
+        data: updateData,
       });
     } catch (error) {
       console.error("Database error in updateTestConversationStatus:", error);
@@ -308,18 +350,21 @@ async updateTestRun(testRun: TestRun) {
     }
   }
 
-    async getUniqueTestRuns(): Promise<TestRun[]> {
+  async getUniqueTestRuns(): Promise<TestRun[]> {
     try {
-      const runs = await prisma.$queryRaw`SELECT DISTINCT ON (name) * FROM test_runs ORDER BY name, created_at DESC;`;
+      const runs =
+        await prisma.$queryRaw`SELECT DISTINCT ON (name) * FROM test_runs ORDER BY name, created_at DESC;`;
 
-      return runs.map(run => ({
+      return runs.map((run) => ({
         id: run.id,
         name: run.name,
-        timestamp: run.created_at ? run.created_at.toISOString() : new Date().toISOString(),
-        status: run.status as 'pending' | 'running' | 'completed' | 'failed',
-          total: run.total_tests ?? 0,
-          passed: run.passed_tests ?? 0,
-          failed: run.failed_tests ?? 0,
+        timestamp: run.created_at
+          ? run.created_at.toISOString()
+          : new Date().toISOString(),
+        status: run.status as "pending" | "running" | "completed" | "failed",
+        total: run.total_tests ?? 0,
+        passed: run.passed_tests ?? 0,
+        failed: run.failed_tests ?? 0,
         // metrics: {
         //   total: run.total_tests ?? 0,
         //   passed: run.passed_tests ?? 0,
@@ -343,12 +388,12 @@ async updateTestRun(testRun: TestRun) {
         //       const metrics: any = {
         //         responseTime: msg.response_time ?? 0
         //       };
-              
+
         //       // If there's a metrics JSON object, merge it in
         //       if (msg.metrics && typeof msg.metrics === 'object') {
         //         Object.assign(metrics, msg.metrics);
         //       }
-              
+
         //       return {
         //         id: msg.id,
         //         chatId: msg.conversation_id,
@@ -377,7 +422,7 @@ async updateTestRun(testRun: TestRun) {
         //       explanation: conversation.validation_reason ?? ""
         //     }
         //   };
-        // }),     
+        // }),
         // results: [],
         agentId: run.agent_id,
       }));
@@ -386,8 +431,6 @@ async updateTestRun(testRun: TestRun) {
       throw new Error("Failed to fetch test runs");
     }
   }
-
-  
 }
 
 export const testRunService = new TestRunService();

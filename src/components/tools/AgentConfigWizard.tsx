@@ -61,6 +61,12 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
   const [requestBodyText, setRequestBodyText] = useState(JSON.stringify(config.requestBody, null, 2));
   const [rules, setRules] = useState<any[]>(config.rules || []); // Assuming rules is an array of objects
   const { savedAgents, setSavedAgents } = useAgentConfig();
+// Check if agent name exists in savedAgents (case-insensitive, exclude current id)
+  const nameExists = !!config.name && savedAgents?.some(
+    (agent: any) =>
+      agent.name?.toLowerCase() === config.name.toLowerCase() &&
+      agent.id !== config.id
+  );
 
   // Update config when initialConfig changes (e.g., when loading an agent)
   useEffect(() => {
@@ -227,26 +233,30 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
 
             <div>
               <Label htmlFor="name">Agent Name</Label>
-              <Input
-                id="name"
-                placeholder="My Customer Support Bot"
-                value={config.name}
-                onChange={(e) => {
-                  try {
-                    if (!savedAgents.some((val :any )=> val.name.toLowerCase() == e.target.value)){
-                    setConfig({ ...config, name: e.target.value })
-                    }
-                    else{
-                      toast({title: "Warning", description: `${e.target.value} already present in the system`, duration: 5000, variant: "warning" })
-                      setConfig({ ...config, name: e.target.value })
-                    }
-                  } catch (error) {
-                    toast({ title: "Error", description: 'Failed to set agent name', duration: 5000, variant: "destructive" });
-                  }
-
-                }}
-                className="mt-1"
-              />
+              <div className="relative">
+                <Input
+                  id="name"
+                  placeholder="My Customer Support Bot"
+                  value={config.name}
+                  onChange={(e) => setConfig({ ...config, name: e.target.value })}
+                  className="mt-1 pr-10"
+                  aria-invalid={!!config.name && nameExists}
+                  aria-describedby="agent-name-feedback"
+                />
+                {config.name && (
+                  nameExists ? (
+                    <X className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500" aria-label="Name already exists" />
+                  ) : (
+                    <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500" aria-label="Name is available" />
+                  )
+                )}
+              </div>
+              {config.name && nameExists && (
+                <p id="agent-name-feedback" className="text-xs text-red-500 mt-1">This name is already taken.</p>
+              )}
+              {config.name && !nameExists && (
+                <p id="agent-name-feedback" className="text-xs text-green-600 mt-1">This name is available.</p>
+              )}
             </div>
 
             <div>
@@ -290,7 +300,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   // Clear test result when endpoint changes
                   setTestResult(null);
                   setSelectedPath('');
-                  setConfig((prev:any) => ({ ...prev, responsePath: '' }));
+                  setConfig((prev: typeof config) => ({ ...prev, responsePath: '' }));
                 }}
                 className="mt-1"
               />
@@ -346,7 +356,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                         size="icon"
                         variant="ghost"
                         onClick={() => {
-                          const newHeaders = config.headers.filter((_ : any, i : any) => i !== index);
+                          const newHeaders = config.headers.filter((_: any, i: number) => i !== index);
                           setConfig({ ...config, headers: newHeaders });
                         }}
                       >
@@ -368,14 +378,12 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                 value={requestBodyText}
                 onChange={(e) => {
                   const newText = e.target.value;
-                  console.log('Request body changed:', newText);
                   setRequestBodyText(newText);
-
+                  
                   try {
                     const parsed = JSON.parse(newText);
-                    console.log('Parsed request body:', parsed);
-                    setConfig((prev: any) => ({
-                      ...prev,
+                    setConfig((prev: typeof config) => ({ 
+                      ...prev, 
                       requestBody: parsed,
                       responsePath: '' // Reset response path when body changes
                     }));
@@ -389,11 +397,11 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                 }}
               />
             </div>
-
+            
             <div className="pt-4 border-t">
               <div className="flex items-center justify-between mb-2">
                 <Label>Test Your Connection</Label>
-                <Button
+                <Button 
                   onClick={sendTestRequest}
                   disabled={!config.endpoint || isLoading}
                 >
@@ -454,7 +462,6 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   )}
                 </div>
               )}
-
             </div>
           </div>
         );
@@ -544,7 +551,7 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
                   variant="outline"
                   onClick={() => {
                     setConfig({ ...config, responsePath: selectedPath });
-                    toast({ title: "Success", description: 'Output path set successfully', duration: 2000, variant: "info" });
+                    toast({ title: "Success", description: 'Output path set successfully', duration: 2000, variant: "success" });
                   }}
                   className="ml-auto"
                 >
@@ -715,12 +722,12 @@ export default function AgentConfigWizard({ onComplete, initialConfig }: AgentCo
             Previous
           </Button>
           {currentStep < steps.length - 1 && (
-            <Button className="flex justify-between mt-8 pt-6 border-t"
+            <Button
               onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
               disabled={
-                (currentStep === 0 && (!config.name || !config.description)) ||
+                (currentStep === 0 && (!config.name || !config.description || nameExists) ) ||
                 (currentStep === 1 && !testResult) ||
-                (currentStep === 2 && (!config.messagePath || !config.responsePath))
+                (currentStep === 2 && (!config.messagePath || !config.responsePath) )
               }
             >
               Next

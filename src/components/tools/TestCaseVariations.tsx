@@ -130,12 +130,10 @@ export function TestCaseVariations({
       scenario: "",
       expectedOutput: "",
     };
-
+    
     setGeneratedCases([newCase, ...generatedCases]);
     setEditingId(newCase.id);
-    setEditingState({ scenario: "", expectedOutput: "" });
-     toast({ title: "Success", description: 'Test Case added', duration: 5000, variant: "success" });
-
+    setEditingState({ scenario: "", expectedOutput: "" })
   };
 
   const saveEdit = async () => {
@@ -164,6 +162,7 @@ export function TestCaseVariations({
         await updateVariation(payload);
       } else {
         await addVariation(payload);
+        toast({ title: "Success", description: 'Added testcase', duration: 5000, variant: "success" });
       }
 
       setGeneratedCases((prev) => {
@@ -206,7 +205,7 @@ export function TestCaseVariations({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ scenarioIds: idsToDelete, testId: selectedTestId }),
       }).then((data)=>{
-        toast({ title: "Success", description: 'Delete testcase success', duration: 5000, variant: "success" });
+        toast({ title: "Success", description: 'Delete testcase success', duration: 5000, variant: "success" });  
         console.log("senario delete success message : , ",data);
       }).catch((error)=>{
         console.log("senario delete success message : , ",error);
@@ -296,6 +295,7 @@ export function TestCaseVariations({
                 size="sm"
                 className="h-7 px-2 text-xs"
                 onClick={addNewTestCase}
+              
                 disabled={loading || errorContext.isLoading}
               >
                 <Plus className="h-3 w-3 mr-1" />
@@ -359,7 +359,9 @@ export function TestCaseVariations({
             <Button
               size="sm"
               variant="destructive"
-              onClick={() => deleteTestCases(selectedIds)}
+              onClick={() => {deleteTestCases(selectedIds)
+                toast({ title: "Success", description: 'Test Case added', duration: 5000, variant: "success" });}
+              }
               className="h-7 px-2 text-xs"
             >
               Delete ({selectedIds.length})

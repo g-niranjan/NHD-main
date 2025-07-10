@@ -13,6 +13,7 @@ import { ThemeToggle } from '@/components/ui/theme-toggler';
 
 const inter = Inter({ subsets: ['latin'] })
 
+
 export default function RootLayout({
   children,
 }: {
@@ -20,6 +21,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="Wingrad" />
+      </head>
+
       <body className={`${inter.className} min-h-screen antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -31,21 +39,23 @@ export default function RootLayout({
             <ErrorProvider>
               <header className="flex justify-between items-center px-4 py-2 border-b border-border bg-card">
                 <div className="flex items-center gap-2">
-                  <img src="/isteer_logo.png" alt="GenAI Logo" className="h-12 w-30" />
-                  <h1 className="text-xl font-bold text-orange-500">GenAI Test Suite</h1>
+                  <img src="/winograd_logo.png" alt="GenAI Logo" className="h-12 w-30" />
+                  {/* <h1 className="text-xl font-bold text-orange-500">Winograd</h1> */}
                   <span className="text-xs text-muted-foreground uppercase tracking-wider border-l border-muted pl-2">
-                    Agent Testing Framework 
+                    Agent Testing Framework
                   </span>
                   <ThemeToggle />
                   <Toaster />
                 </div>
               </header>
+              <div>
+                <main className="flex min-h-screen flex-col">
+                  {children}
+                </main>
+              </div>
 
-              <main className="flex min-h-screen flex-col">
-                {children}
-              </main>
               <footer className="flex justify-center items-center px-4 py-2 border-t border-border bg-card text-sm text-muted-foreground">
-                <span>© 2025 GenAI Test Suite. All rights reserved.</span>
+                <span>© {new Date().getFullYear() || '2025'} GenAI Test Suite. All rights reserved.</span>
               </footer>
             </ErrorProvider>
           </ErrorBoundary>

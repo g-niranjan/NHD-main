@@ -116,6 +116,7 @@ export default function ToolsPage() {
 
       throw new Error("Failed to delete agent", error.message);
     }
+
    }
 
   return (

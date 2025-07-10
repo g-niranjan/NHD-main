@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useTestExecution } from "@/hooks/useTestExecution";
 import RunsList from "./RunsList";
 import RunDetail from "./RunDetail";
@@ -21,6 +21,7 @@ export function TestRunsDashboard() {
     executeTest,
     error,
     clearError,
+    setRuns
   } = useTestExecution();
 
   const [showWarningDialog, setShowWarningDialog] = useState(false);
@@ -29,6 +30,15 @@ export function TestRunsDashboard() {
     message: "Something went wrong.",
     severity : 'info'
   });
+
+  useEffect(() => {
+    // Example: auto-select the most recent run when runs update
+    if (runs && runs.length > 0) {
+      setRuns(runs); // or whatever logic you want
+    }
+    // You can also trigger other side effects here
+  }, [runs]); // This effect runs every time 'runs' changes
+
 
   // Handle model config issues
   const handleExecuteTest = async (testId: string) => {

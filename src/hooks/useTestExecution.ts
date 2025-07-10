@@ -91,8 +91,8 @@ export function useTestExecution() {
         setStatus('completed');
         
         // Update the test runs list
-         addRun(completedRun);
-        //updateRun(completedRun);
+        //addRun(completedRun);
+        updateRun(completedRun);
         
         return completedRun;
       });
@@ -120,7 +120,7 @@ export function useTestExecution() {
     isExecuting: status === 'connecting' || status === 'running',
     currentMessages,
     isTyping,
-    runs,
+    runs,setRuns,
     selectedRun,
     setSelectedRun,
     selectedChat,

@@ -22,13 +22,18 @@ export default function Sidebar() {
   const navItems = [
     {
       label : 'Dashboard',
-      icon : LayoutTemplate ,
+      icon :   LayoutTemplate ,
       href : '/tools'
     },
     {
       label: 'Configuration',
       icon: Home,
-      href: '/tools/dashboard'
+      href: '/tools/configuration'
+    },
+    {
+      label: 'LLM Config',
+      icon: Key,
+      href: '/tools/agnetconfigs'
     },
     // {
     //   label: 'Personas',
@@ -51,17 +56,14 @@ export default function Sidebar() {
       href: '/tools/runs'
     },
     //!added by niranjan
-    {
-      label: 'LLM Config',
-      icon: Key,
-      href: '/tools/agnetconfigs'
-    },
+    
     // {
     //   label: 'Metrics',
     //   icon: LineChart,
     //   href: '/tools/metrics'
     // }
   ]
+  
   
   return (
     <div className="w-64 border-r border-border bg-card shadow-sm h-screen flex flex-col">
